@@ -6,7 +6,7 @@ DESCRIPTION=: 0 : 0
 J Memory Mapped File
 )
 
-VERSION=: ''
+VERSION=: '1.0.0'
 
 RELEASE=: 'j701'
 
