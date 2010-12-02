@@ -1,12 +1,12 @@
 NB. data/jmf manifest
 
-CAPTION=: 'JMF'
+CAPTION=: 'J Memory Mapped File'
 
 DESCRIPTION=: 0 : 0
 J Memory Mapped File
 )
 
-VERSION=: '1.0.0'
+VERSION=: '1.0.1'
 
 RELEASE=: 'j701'
 
@@ -16,8 +16,6 @@ FILES=: 0 : 0
 history.txt
 manifest.ijs
 jmf.ijs
-doc.ijs
-errors.ijs
 test/testdata.ijs
 test/testjmf.ijs
 )

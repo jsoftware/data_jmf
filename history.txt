@@ -2,3 +2,6 @@ data/jmf - change history
 
 == 1.0.0 ==
  * moved to addons
+
+== 1.0.1 ==
+ * J701 beta release
