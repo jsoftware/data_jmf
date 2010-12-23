@@ -54,7 +54,7 @@ AFNJA=: 2
 NULLPTR=: <0
 3 : 0''
 if. IFUNIX do.
-  lib=. 'libc.so.6 '
+  lib=. >(UNAME-:'Darwin'){'libc.so.6 ';'libc.dylib '
   api=. 1 : ('(''',lib,''',x) & cd')
   c_isatty=: ' isatty i i' api
   c_open=: 'open i *c i i' api
@@ -87,10 +87,10 @@ else.
   PAGE_READONLY=: 2
   PAGE_READWRITE=: 4
   TRUNCATE_EXISTING=: 5
-
+  
   j=. (GENERIC_READ+GENERIC_WRITE),PAGE_READWRITE,FILE_MAP_WRITE
   RW=: j,:GENERIC_READ,PAGE_READONLY,FILE_MAP_READ
-
+  
   CloseHandleR=: 'kernel32 CloseHandle > i x'&(15!:0)
   CreateFileMappingR=: 'kernel32 CreateFileMappingA > x x * i i i *c'&(15!:0)
   CreateFileR=: 'kernel32 CreateFileA > x *c i i * i i x'&(15!:0)
