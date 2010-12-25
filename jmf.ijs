@@ -92,12 +92,12 @@ else.
   RW=: j,:GENERIC_READ,PAGE_READONLY,FILE_MAP_READ
   
   CloseHandleR=: 'kernel32 CloseHandle > i x'&(15!:0)
-  CreateFileMappingR=: 'kernel32 CreateFileMappingA > x x * i i i *c'&(15!:0)
-  CreateFileR=: 'kernel32 CreateFileA > x *c i i * i i x'&(15!:0)
+  CreateFileMappingR=: 'kernel32 CreateFileMappingW > x x * i i i *w'&(15!:0)
+  CreateFileR=: 'kernel32 CreateFileW > x *w i i * i i x'&(15!:0)
   GetLastError=: 'kernel32 GetLastError > i'&(15!:0)
   FlushViewOfFileR=: 'kernel32 FlushViewOfFile > i * x'&(15!:0)
   MapViewOfFileR=: >@{.@('kernel32 MapViewOfFile * x i i i x'&(15!:0))
-  OpenFileMappingR=: 'kernel32 OpenFileMappingA > x i i *c'&(15!:0)
+  OpenFileMappingR=: 'kernel32 OpenFileMappingW > x i i *w'&(15!:0)
   SetEndOfFile=: 'kernel32 SetEndOfFile > i x'&(15!:0)
   UnmapViewOfFileR=: 'kernel32 UnmapViewOfFile > i *'&(15!:0)
   WriteFile=: 'kernel32 WriteFile i x * i *i *'&(15!:0)
@@ -247,7 +247,7 @@ if. IFUNIX do.
   c_write fh;d;(SZI*#d)
   c_close fh
 else.
-  fh=. CreateFileR fn;(GENERIC_READ+GENERIC_WRITE);0;NULLPTR;CREATE_ALWAYS;0;0
+  fh=. CreateFileR (uucp fn,{.a.);(GENERIC_READ+GENERIC_WRITE);0;NULLPTR;CREATE_ALWAYS;0;0
   SetFilePointerR fh;ts;NULLPTR;FILE_BEGIN
   SetEndOfFile fh
   SetFilePointerR fh;0;NULLPTR;FILE_BEGIN
@@ -270,7 +270,7 @@ else.
   'bad noun name'assert ('_'={:name)*._1=nc<name
   fh=. _1
   fn=. ''
-  mh=. OpenFileMappingR (ro{FILE_MAP_WRITE,FILE_MAP_READ);0;sn,{.a.
+  mh=. OpenFileMappingR (ro{FILE_MAP_WRITE,FILE_MAP_READ);0;uucp sn,{.a.
   if. mh=0 do. assert 0[CloseHandleR fh['bad mapping' end.
   fad=. MapViewOfFileR mh;FILE_MAP_WRITE;0;0;0
   if. fad=0 do. assert 0[CloseHandleR mh[CloseHandleR fh['bad view' end.
@@ -341,7 +341,7 @@ if. IFUNIX do.
   end.
 else.
   'fa ma va'=. ro{RW     
-  fh=. CreateFileR (fn,{.a.);fa;(FILE_SHARE_READ+FILE_SHARE_WRITE);NULLPTR;OPEN_EXISTING;0;0
+  fh=. CreateFileR (uucp fn,{.a.);fa;(FILE_SHARE_READ+FILE_SHARE_WRITE);NULLPTR;OPEN_EXISTING;0;0
   'bad file name/access'assert fh~:_1
   ts=. GetFileSizeR fh
   mh=: CreateFileMappingR fh;NULLPTR;ma;0;0;(0=#sn){(sn,{.a.);<NULLPTR
@@ -434,7 +434,7 @@ unmapall=: 3 : '>unmap each 0{"1 mappings'
 memshare=: 3 : 0
 bNo_Inherit_Handle=. FALSE
 lpShareName=. y,{.a.
-mh=. OpenFileMappingR (FILE_MAP_READ+FILE_MAP_WRITE); bNo_Inherit_Handle; lpShareName
+mh=. OpenFileMappingR (FILE_MAP_READ+FILE_MAP_WRITE); bNo_Inherit_Handle; uucp lpShareName
 ('Unable to map ',y) assert mh~:0
 
 addr=. MapViewOfFileR mh; (FILE_MAP_READ+FILE_MAP_WRITE); 0; 0; 0
