@@ -344,7 +344,7 @@ else.
   fh=. CreateFileR (uucp fn,{.a.);fa;(FILE_SHARE_READ+FILE_SHARE_WRITE);NULLPTR;OPEN_EXISTING;0;0
   'bad file name/access'assert fh~:_1
   ts=. GetFileSizeR fh
-  mh=: CreateFileMappingR fh;NULLPTR;ma;0;0;(0=#sn){(sn,{.a.);<NULLPTR
+  mh=: CreateFileMappingR fh;NULLPTR;ma;0;0;(0=#sn){(uucp sn,{.a.);<NULLPTR
   if. mh=0 do. 'bad mapping'assert 0[free fh,0,0 end.
   fad=. MapViewOfFileR mh;va;0;0;0
   if. fad=0 do.
