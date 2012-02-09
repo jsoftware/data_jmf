@@ -335,25 +335,31 @@ if. IFUNIX do.
   fh=. >0 { c_open fn;(ro{O_RDWR,O_RDONLY);0
   'bad file name/access' assert fh~:_1
   mh=. ts
-  fad=. >0{ c_mmap (<0);ts;(OR ro}. PROT_WRITE, PROT_READ);MAP_SHARED;fh;0
-  if. fad e. 0 _1 do.
-    'bad view' assert 0[free fh,mh,0
+  if. 0=ts do.
+    fad=. 0
+  else.
+    fad=. >0{ c_mmap (<0);ts;(OR ro}. PROT_WRITE, PROT_READ);MAP_SHARED;fh;0
+    if. _1=fad do. 'bad view' assert 0[free fh,mh,0 end.
   end.
 else.
   'fa ma va'=. ro{RW
   fh=. CreateFileR (uucp fn,{.a.);fa;(FILE_SHARE_READ+FILE_SHARE_WRITE);NULLPTR;OPEN_EXISTING;0;0
   'bad file name/access'assert fh~:_1
   ts=. GetFileSizeR fh
-  mh=: CreateFileMappingR fh;NULLPTR;ma;0;0;(0=#sn){(uucp sn,{.a.);<NULLPTR
-  if. mh=0 do. 'bad mapping'assert 0[free fh,0,0 end.
-  fad=. MapViewOfFileR mh;va;0;0;0
-  if. fad=0 do.
-    errno=. GetLastError''
-    free fh,mh,0
-    if. ERROR_NOT_ENOUGH_MEMORY-:errno do.
-      'not enough memory' assert 0
-    else.
-      'bad view' assert 0
+  if. 0=ts do.
+    fad=. mh=. 0
+  else.
+    mh=: CreateFileMappingR fh;NULLPTR;ma;0;0;(0=#sn){(uucp sn,{.a.);<NULLPTR
+    if. mh=0 do. 'bad mapping'assert 0[free fh,0,0 end.
+    fad=. MapViewOfFileR mh;va;0;0;0
+    if. fad=0 do.
+      errno=. GetLastError''
+      free fh,mh,0
+      if. ERROR_NOT_ENOUGH_MEMORY-:errno do.
+        'not enough memory' assert 0
+      else.
+        'bad view' assert 0
+      end.
     end.
   end.
 end.
