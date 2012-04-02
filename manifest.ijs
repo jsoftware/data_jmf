@@ -10,7 +10,7 @@ VERSION=: '1.0.5'
 
 RELEASE=: 'j701'
 
-PLATFORMS=: 'linux win darwin'
+PLATFORMS=: ''
 
 FILES=: 0 : 0
 history.txt
