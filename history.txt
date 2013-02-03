@@ -10,4 +10,4 @@ data/jmf - change history
  * UNAME android
 
 == 1.0.7 ==
- * j801
+ * chg: update for j801
