@@ -63,10 +63,18 @@ if. IFUNIX do.
   c_lseek=: 'lseek x i x i' api
   c_mmap=: 'mmap * * x i i i x' api
   c_munmap=: 'munmap i * x' api
-  if. UNAME -: 'Darwin' do.
+  if. (-.IFIOS) *. UNAME -: 'Darwin' do.
     c_mmap=: }:@:('mmap * * i i i i i i' api)@:(}: , (<0)"_ , {:)
     if. ({.a.)={. 1&(3!:4) 1 do.
       c_lseek=: (0 1 3 4&{)@:('lseek i i i i i' api)@:(0&{ , (<0)"_ , 1&{ , 2&{)
+    end.
+  elseif. IFIOS *. (UNAME -: 'Darwin') > IF64 do.
+    if. ({.a.)={. 1&(3!:4) 1 do.
+      c_mmap=: }:@:('mmap * * i i i i i i' api)@:(}: , (<0)"_ , {:)
+      c_lseek=: (0 1 3 4&{)@:('lseek i i i i i' api)@:(0&{ , (<0)"_ , 1&{ , 2&{)
+    else.
+      c_mmap=: }:@:('mmap * * i i i i i i' api)@:(}: , (<0)"_ ,~ {:)
+      c_lseek=: (0 1 3 4&{)@:('lseek i i i i i' api)@:(0&{ , (<0)"_ ,~ 1&{ , 2&{)
     end.
   end.
 else.
