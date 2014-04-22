@@ -8,7 +8,7 @@ J Memory Mapped File
 
 VERSION=: '1.0.9'
 
-RELEASE=: 'j701 j801'
+RELEASE=: 'j802'
 
 PLATFORMS=: ''
 
