@@ -432,17 +432,17 @@ mh=. OpenFileMappingR (FILE_MAP_READ+FILE_MAP_WRITE); bNo_Inherit_Handle; uucp l
 
 addr=. MapViewOfFileR mh; (FILE_MAP_READ+FILE_MAP_WRITE); 0; 0; 0
 if. addr=0 do. 'MapViewOfFile failed' assert 0[CloseHandleR mh end.
-".(_1=4!:0<'mapTable')#'mapTable=:i.0,3'  
-mapTable=: mapTable, y; mh; addr   
+".(_1=4!:0<'mapTable')#'mapTable=:i.0,3'
+mapTable=: mapTable, y; mh; addr
 addr
 )
 memshareclose=: 3 : 0
-r=. y findkey mapTable      
-'Unknown share name' assert 0~:$r   
-'mh addr'=. {:(<r; 1 2){mapTable    
+r=. y findkey mapTable
+'Unknown share name' assert 0~:$r
+'mh addr'=. {:(<r; 1 2){mapTable
 ('Unable to close share: ', y) assert $mh > 0
-UnmapViewOfFileR <<addr      
-if. CloseHandleR mh do.      
-  mapTable=: (<((i.#mapTable)-.r); i.{:$mapTable){mapTable  
+UnmapViewOfFileR <<addr
+if. CloseHandleR mh do.
+  mapTable=: (<((i.#mapTable)-.r); i.{:$mapTable){mapTable
 end.
 )
