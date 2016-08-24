@@ -18,6 +18,8 @@ doc=: 0 : 0
         types are defined in dll.ijs as:
             JB01      boolean
             JCHAR     character
+            JCHAR2    unicode
+            JCHAR4    unicode4
             JINT      integer
             JFL       floating point
             JCMPX     complex
