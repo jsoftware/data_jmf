@@ -170,7 +170,7 @@ validate=: 3 : 0
 'ts had'=. y
 if. ts>:HS do.
   d=. memr had,0 4,JINT
-  *./((HS,ts-HS)=0 2{d),1 2 4 8 16 32 131072 262144 e.~ 3{d
+  *./((HS,ts-HS)=0 2{d),1 2 4 8 16 32 131072 262144 65536 e.~ 3{d
 else. 0 end.
 )
 ERROR_NOT_ENOUGH_MEMORY=: 8
