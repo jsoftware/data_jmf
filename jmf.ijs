@@ -117,6 +117,8 @@ allochdr=: 3 : 'r[2 memw (r=.15!:8 y),HADC,1,JINT'
 freehdr=: 15!:9
 msize=: 3 : 'memr y,HADM,1,JINT'
 refcount=: 3 : 'memr y,HADC,1,JINT'
+
+nountype =: 17 b.&16b1fffff
 MAXINTU=: 2 ^ IF64{32 64x
 MAXINTS=: <: 2 ^ IF64{31 63x
 ufs=: + MAXINTU * 0 > ]
@@ -153,6 +155,7 @@ z=. z, *./ 0 = 8|a
 )
 settypeshape=: 3 : 0
 'name type shape'=: y
+type =: nountype type
 rank=. #shape
 sad=. symget <fullname name
 'bad name' assert sad
@@ -170,7 +173,7 @@ validate=: 3 : 0
 'ts had'=. y
 if. ts>:HS do.
   d=. memr had,0 4,JINT
-  *./((HS,ts-HS)=0 2{d),1 2 4 8 16 32 131072 262144 65536 e.~ 3{d
+  *./((HS,ts-HS)=0 2{d),1 2 4 8 16 32 131072 262144 65536 e.~ nountype 3{d
 else. 0 end.
 )
 ERROR_NOT_ENOUGH_MEMORY=: 8
@@ -218,6 +221,7 @@ sad=. symget <fullname y
 'bad name' assert sad
 had=. 1{s=. memr sad,0 4,JINT
 'flag msize type rank'=. 1 2 3 6{memr had,0 28,JINT
+type =. nountype type 
 'not mapped and writeable' assert 2=flag
 'scalar' assert 0~:rank
 'not supported for boxed data' assert 32~:type
@@ -307,6 +311,7 @@ map=: 3 : 0
 :
 if. 0=L.x do. t=. <&> x else. t=. x end.
 'type tshape hsize'=. 3 {. t, a:
+type =. nountype type
 
 'trailing shape may not be zero' assert -. 0 e. tshape
 
