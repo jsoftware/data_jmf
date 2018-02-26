@@ -1,12 +1,8 @@
 cocurrent 'jmf'
-
 jsystemdefs 'hostdefs'
-
 coinsert 'jdefs'
 
-
 doc=: 0 : 0
-
  map name;filename [;sharename;readonly]
        - map jmf file (self-describing)
 
@@ -33,28 +29,74 @@ doc=: 0 : 0
       2 refs
 
   unmapall''                  - unmap all
-
   createjmf filename;msize    - creates jmf file as empty vector
-                                (self-describing)
-
-  additem name                - add an item to a name
-
   share name;sharedname       - share 'sharedname' as name
-
-  showle name                 - show locale entry and header for name
-
   showmap''                   - show all maps
-
 )
+0 : 0
+807 made changes to the header that affect jmf J code
+before 807 - HADR field bytes are (lilendian) rrrr (j32) rrrrrrrr (j64)
+after  807 - HADR field bytes are (lilendian) rrhh (j32) rrhhxxxx (j64)
+flipped for bigendian (fill,hh,rr)
+hh field flags must not be touched by jmf
+newheader is 1 if 807 header format
+)
+IFBE=: 'a'~:{.2 ic a.i.'a'
 SZI=: IF64{4 8
 'HADK HADFLAG HADM HADT HADC HADN HADR HADS'=: SZI*i.8
+HADRUS=: HADR+IFBE*IF64{2 6 NB. address of rank US bytes
 HADCN=: <.HADC%SZI
-
 HSN=: 7+64
 HS=: SZI*HSN
 AFRO=: 1
 AFNJA=: 2
 NULLPTR=: <0
+gethad=: 3 : 0
+sad=. symget <fullname y
+'bad name' assert sad
+1{memr sad,0 4,JINT
+)
+symget=: 15!:6
+symset=: 15!:7
+allochdr=: 3 : 'r[2 setHADC r=.15!:8 y'
+freehdr=: 15!:9
+msize=: 3 : 'memr y,HADM,1,JINT'
+fullname=: 3 : 0
+t=. y-.' '
+t,('_'~:{:t)#'_base_'
+)
+newheader=: 0~:memr (gethad'SZI_jmf_'),HADR,1,JINT
+
+setheader=: 4 : 0
+if. newheader do.
+ (6{.x) memw y,0,6,JINT
+ (6{x)  setHADR y
+ (7}.x) memw y,HADS,(#7}.x),JINT
+else.
+ h memw y,0,(#x),JINT
+end.
+)
+
+getHADR=: 3 : 0
+if. newheader do.
+ _1 (3!:4) memr y,HADRUS,2,JCHAR
+else.
+ memr y,HADR,1,JINT
+end.
+)
+
+setHADR=: 4 : 0
+if. newheader do.
+ (1 (3!:4) x) memw y,HADRUS,2,JCHAR
+else.
+ x memw y,HADR,1,JINT
+end.
+)
+
+getHADC=: 3 : '  memr y,HADC,1,JINT'
+setHADC=: 4 : 'x memw y,HADC,1,JINT'
+refcount=: getHADC
+
 3 : 0''
 if. IFUNIX do.
   lib=. ' ',~ unxlib 'c'
@@ -111,13 +153,6 @@ if. _1 = 4!:0<'mappings' do.
 end.
 empty''
 )
-symget=: 15!:6
-symset=: 15!:7
-allochdr=: 3 : 'r[2 memw (r=.15!:8 y),HADC,1,JINT'
-
-freehdr=: 15!:9
-msize=: 3 : 'memr y,HADM,1,JINT'
-refcount=: 3 : 'memr y,HADC,1,JINT'
 
 nountype =: 17 b.&16b1fffff
 MAXINTU=: 2 ^ IF64{32 64x
@@ -135,10 +170,6 @@ else.
   if. mh do. CloseHandleR mh end.
   if. fh~:_1 do. CloseHandleR fh end.
 end.
-)
-fullname=: 3 : 0
-t=. y-.' '
-t,('_'~:{:t)#'_base_'
 )
 mbxcheck=: 3 : 0
 x=. 15!:12 y
@@ -158,16 +189,16 @@ settypeshape=: 3 : 0
 'name type shape'=: y
 type =: nountype type
 rank=. #shape
-sad=. symget <fullname name
-'bad name' assert sad
-had=. 1{s=. memr sad,0 4,JINT
+had=. gethad name
 'flag msize'=. memr had,HADFLAG,2,JINT
 'not mapped and writeable' assert 2=flag
 size=. (JTYPES i.type){JSIZES
 ts=. size**/shape
 'msize too small' assert ts<:msize
 type memw had,HADT,1,JINT
-((*/shape),rank,shape) memw had,HADN,(2+rank),JINT
+(*/shape) memw had,HADN,1,JINT
+rank setHADR had
+shape memw had,HADS,(#shape),JINT
 i.0 0
 )
 validate=: 3 : 0
@@ -217,25 +248,9 @@ j=. <;._2 (0 : 0)
 
 WINERRNOS=: 0 ". 2 {.&> j
 WINERRMSG=: 3 }.each j
-additem=: 3 : 0
-sad=. symget <fullname y
-'bad name' assert sad
-had=. 1{s=. memr sad,0 4,JINT
-'flag msize type rank'=. 1 2 3 6{memr had,0 28,JINT
-type =. nountype type 
-'not mapped and writeable' assert 2=flag
-'scalar' assert 0~:rank
-'not supported for boxed data' assert 32~:type
-shape=. memr had,HADS,rank,JINT
-shape=. shape+1,0#~rank-1
-size=. (JTYPES i.type){JSIZES
-ts=. size**/shape
-'msize too small' assert ts<:msize
-((*/shape),rank,shape) memw had,HADN,(2+rank),JINT
-i.0 0
-)
 createjmf=: 3 : 0
 'fn msize'=. y
+fn=. jpath fn
 msize=. <. msize
 ts=. HS+msize
 if. IFUNIX do.
@@ -276,7 +291,7 @@ else.
   if. fad=0 do. assert 0[CloseHandleR mh[CloseHandleR fh['bad view' end.
   had=. fad
   hs=: 0
-  ts=. memr had,HADM,1,JINT
+  ts=. msize had
   mappings=: mappings,name;fn;sn;fh;mh;fad;had;ts
   (name)=: symset had
   i.0 0
@@ -295,13 +310,7 @@ flags=. flags(23 b.)AFRO*0~:x
 flags memw flagsad,0 1,JINT
 i. 0 0
 )
-showle=: 3 : 0
-le=. memr (symget <fullname y),0 4,JINT
-had=. 1{le
-h=. memr had,0 7,JINT
-s=. memr had,HADS,(6{h),JINT
-le;h;s
-)
+
 showmap=: 3 : 0
 h=. 'name';'fn';'sn';'fh';'mh';'address';'header';'ts';'msize';'refs'
 hads=. 6{"1 mappings
@@ -317,6 +326,7 @@ type =. nountype type
 'trailing shape may not be zero' assert -. 0 e. tshape
 
 'name fn sn ro'=. 4{.y,(#y)}.'';'';'';0
+fn=. jpath fn
 sn=. '/' (('\'=sn)#i.#sn)} sn
 name=. fullname name
 c=. #mappings
@@ -364,7 +374,7 @@ if. ro*.0=type do.
   d=. memr fad,0,HSN,JINT
   d=. (sfu HS+-/ufs fad,had),aa,2}.d
   d=. 1 HADCN} d
-  d memw had,0,HSN,JINT
+  d setheader had
 elseif. 0=type do.
   had=. fad
   if. 0=validate ts,had do. 'bad jmf header' assert 0[free fh,mh,fad end.
@@ -372,17 +382,18 @@ elseif. 0=type do.
   if. sn-:'' do.
     t=. 0
   else.
-    t=. 10000+ memr had,HADC,1,JINT
+    t=. 10000+ getHADC had
   end.
-  (,t+1) memw had,HADC,1,JINT
+  (,t+1) setHADC had
 elseif. 1 do.
   had=. allochdr 127
+  'JBOXED (non-jmf) not supported' assert JBOXED~:type
   bx=. JBOXED=type
   hs=. (+/hsize)*asize=. JSIZES {~ JTYPES i. type
   lshape=. bx}.<.(ts-hs)%(*/tshape)*asize
   d=. sfu hs+-/ufs fad,had
   h=. d,aa,ts,type,1,(*/lshape,tshape),((-.bx)+#tshape),lshape,tshape
-  h memw had,0,(#h),JINT
+  h setheader had
 end.
 
 mappings=: mappings,name;fn;sn;fh;mh;fad;had
@@ -400,7 +411,7 @@ m=. row{mappings
 4!:55 ::] n
 'sn fh mh fad had'=. 5{.2}.m
 
-if. *./(-.x),(0=#sn),1~:memr had,HADC,1,JINT do. 2 return. end.
+if. *./(-.x),(0=#sn),1~:getHADC had do. 2 return. end.
 
 jmf=. fad = had
 if. -.jmf do. freehdr had end.

@@ -6,7 +6,7 @@ DESCRIPTION=: 0 : 0
 J Memory Mapped File
 )
 
-VERSION=: '1.0.19'
+VERSION=: '1.0.20'
 
 RELEASE=: 'j802 j803 j804 j805 j806 j807'
 
