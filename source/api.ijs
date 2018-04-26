@@ -1,0 +1,73 @@
+NB. jmf api
+
+SZI=: IF64{4 8     NB. sizeof integer - 4 for 32 bit and 8 for 64 bit
+
+NB. J array header byte offsets
+NB. offset flag msize type refcnt elementcnt rank shap
+'HADK HADFLAG HADM HADT HADC HADN HADR HADS'=: SZI*i.8
+HADCN=: <.HADC%SZI
+
+HSN=: 7+64         NB. jmf header size in JINTs
+HS=: SZI*HSN       NB. jmf header size in bytes
+AFRO=: 1           NB. header flag - readonly
+AFNJA=: 2          NB. header flag - non-J allocation
+NULLPTR=: <0
+
+NB. =========================================================
+NB. conditional definitions
+3 : 0''
+if. IFUNIX do.
+  lib=. ' ',~ unxlib 'c'
+  api=. 1 : ('(''',lib,''',x) & cd')
+  c_open=: 'open i *c i i' api
+  c_close=: 'close i i' api
+  c_read=: 'read x i * x' api
+  c_write=: 'write x i * x' api
+  c_lseek=: 'lseek x i x i' api
+  c_mmap=: 'mmap * * x i i i x' api
+  c_munmap=: 'munmap i * x' api
+else.
+  CREATE_ALWAYS=: 2
+  CREATE_NEW=: 1
+  FALSE=: 0
+  FILE_BEGIN=: 0
+  FILE_END=: 2
+  FILE_MAP_READ=: 4
+  FILE_MAP_WRITE=: 2
+  FILE_SHARE_READ=: 1
+  FILE_SHARE_WRITE=: 2
+  GENERIC_READ=: _2147483648
+  GENERIC_WRITE=: 1073741824
+  OPEN_ALWAYS=: 4
+  OPEN_EXISTING=: 3
+  PAGE_READONLY=: 2
+  PAGE_READWRITE=: 4
+  TRUNCATE_EXISTING=: 5
+
+  j=. (GENERIC_READ+GENERIC_WRITE),PAGE_READWRITE,FILE_MAP_WRITE
+  RW=: j,:GENERIC_READ,PAGE_READONLY,FILE_MAP_READ
+
+  CloseHandleR=: 'kernel32 CloseHandle > i x'&(15!:0)
+  CreateFileMappingR=: 'kernel32 CreateFileMappingW > x x * i i i *w'&(15!:0)
+  CreateFileR=: 'kernel32 CreateFileW > x *w i i * i i x'&(15!:0)
+  GetLastError=: 'kernel32 GetLastError > i'&(15!:0)
+  FlushViewOfFileR=: 'kernel32 FlushViewOfFile > i * x'&(15!:0)
+  MapViewOfFileR=: >@{.@('kernel32 MapViewOfFile * x i i i x'&(15!:0))
+  OpenFileMappingR=: 'kernel32 OpenFileMappingW > x i i *w'&(15!:0)
+  SetEndOfFile=: 'kernel32 SetEndOfFile > i x'&(15!:0)
+  UnmapViewOfFileR=: 'kernel32 UnmapViewOfFile > i *'&(15!:0)
+  WriteFile=: 'kernel32 WriteFile i x * i *i *'&(15!:0)
+  if. IF64 do.
+    GetFileSizeR=: 2 >@{ 'kernel32 GetFileSizeEx i x *x' 15!:0 ;&(,2)
+    SetFilePointerR=: 'kernel32 SetFilePointerEx > i x x *x i'&(15!:0)
+  else.
+    GetFileSizeR=: 'kernel32 GetFileSize > i x *i' 15!:0 ;&(<NULLPTR)
+    SetFilePointerR=: 'kernel32 SetFilePointer > i x i *i i'&(15!:0)
+  end.
+end.
+
+if. _1 = 4!:0<'mappings' do.
+  mappings=: i.0 8
+end.
+empty''
+)
