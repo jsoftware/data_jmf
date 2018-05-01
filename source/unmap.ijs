@@ -20,7 +20,7 @@ m=. row{mappings
 4!:55 ::] n NB. erase name
 'sn fh mh fad had'=. 5{.2}.m
 
-if. *./(-.x),(0=#sn),1~:memr had,HADC,1,JINT do. 2 return. end.
+if. *./(-.x),(0=#sn),1~:getHADC had do. 2 return. end.
 
 jmf=. fad = had  NB. if jmf (self-describing)
 if. -.jmf do. freehdr had end.

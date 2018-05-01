@@ -13,6 +13,7 @@ type =. nountype type
 'trailing shape may not be zero' assert -. 0 e. tshape
 
 'name fn sn ro'=. 4{.y,(#y)}.'';'';'';0
+fn=. jpath fn
 sn=. '/' (('\'=sn)#i.#sn)} sn NB. / not allowed in win sharename
 name=. fullname name
 c=. #mappings
@@ -64,7 +65,7 @@ if. ro*.0=type do. NB. readonly jmf file
   d=. memr fad,0,HSN,JINT
   d=. (sfu HS+-/ufs fad,had),aa,2}.d NB. HADK HADFLAG
   d=. 1 HADCN} d
-  d memw had,0,HSN,JINT
+  d setheader had
 elseif. 0=type do.
   had=. fad
   if. 0=validate ts,had do. 'bad jmf header' assert 0[free fh,mh,fad end.
@@ -72,17 +73,18 @@ elseif. 0=type do.
   if. sn-:'' do.
     t=. 0
   else.
-    t=. 10000+ memr had,HADC,1,JINT NB. shared ref count is bumped and is not valid
+    t=. 10000+ getHADC had NB. shared ref count is bumped and is not valid
   end.
-  (,t+1) memw had,HADC,1,JINT    NB. ref count is 1 (except for shared, which is bumped)
+  (,t+1) setHADC had    NB. ref count is 1 (except for shared, which is bumped)
 elseif. 1 do.
   had=. allochdr 127                   NB. allocate header
+  'JBOXED (non-jmf) not supported' assert JBOXED~:type
   bx=. JBOXED=type
   hs=. (+/hsize)*asize=. JSIZES {~ JTYPES i. type
   lshape=. bx}.<.(ts-hs)%(*/tshape)*asize
   d=. sfu hs+-/ufs fad,had
   h=. d,aa,ts,type,1,(*/lshape,tshape),((-.bx)+#tshape),lshape,tshape
-  h memw had,0,(#h),JINT  NB. set header
+  h setheader had  NB. set header
 end.
 
 mappings=: mappings,name;fn;sn;fh;mh;fad;had

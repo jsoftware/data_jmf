@@ -7,32 +7,11 @@ NB.  showle
 NB.  showmap
 
 NB. =========================================================
-NB.*additem v add item to mapped noun
-NB.
-NB. no longer necessary, but retained for compatibility
-additem=: 3 : 0
-sad=. symget <fullname y
-'bad name' assert sad
-had=. 1{s=. memr sad,0 4,JINT
-'flag msize type rank'=. 1 2 3 6{memr had,0 28,JINT
-type =. nountype type 
-'not mapped and writeable' assert 2=flag
-'scalar' assert 0~:rank
-'not supported for boxed data' assert 32~:type
-shape=. memr had,HADS,rank,JINT
-shape=. shape+1,0#~rank-1
-size=. (JTYPES i.type){JSIZES
-ts=. size**/shape
-'msize too small' assert ts<:msize
-((*/shape),rank,shape) memw had,HADN,(2+rank),JINT
-i.0 0
-)
-
-NB. =========================================================
 NB.*createjmf v create mapped file
 NB. createjmf fn;msize
 createjmf=: 3 : 0
 'fn msize'=. y
+fn=. jpath fn
 msize=. <. msize
 ts=. HS+msize     NB. total file size
 if. IFUNIX do.
@@ -76,7 +55,7 @@ else.
   if. fad=0 do. assert 0[CloseHandleR mh[CloseHandleR fh['bad view' end.
   had=. fad
   hs=: 0
-  ts=. memr had,HADM,1,JINT
+  ts=. msize had
   mappings=: mappings,name;fn;sn;fh;mh;fad;had;ts
   (name)=: symset had  NB. set name to address header
   i.0 0
@@ -100,14 +79,6 @@ flags memw flagsad,0 1,JINT
 i. 0 0
 )
 
-NB. =========================================================
-showle=: 3 : 0
-le=. memr (symget <fullname y),0 4,JINT
-had=. 1{le
-h=. memr had,0 7,JINT
-s=. memr had,HADS,(6{h),JINT
-le;h;s
-)
 
 NB. =========================================================
 NB.*showmap v show all mappings

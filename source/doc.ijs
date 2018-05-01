@@ -1,6 +1,5 @@
 
 doc=: 0 : 0
-
  map name;filename [;sharename;readonly]
        - map jmf file (self-describing)
 
@@ -27,16 +26,7 @@ doc=: 0 : 0
       2 refs
 
   unmapall''                  - unmap all
-
   createjmf filename;msize    - creates jmf file as empty vector
-                                (self-describing)
-
-  additem name                - add an item to a name
-
   share name;sharedname       - share 'sharedname' as name
-
-  showle name                 - show locale entry and header for name
-
   showmap''                   - show all maps
-
 )

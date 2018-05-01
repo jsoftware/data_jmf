@@ -1,17 +1,6 @@
 NB. jmf util
 
-symget=: 15!:6 NB. get address of locale entry for name
-symset=: 15!:7 NB. set name to address header
-
-NB. must set HADC in same sentence as 15!:8 !!!
-allochdr=: 3 : 'r[2 memw (r=.15!:8 y),HADC,1,JINT'
-
-freehdr=: 15!:9 NB. free header
-
 NB. =========================================================
-msize=: 3 : 'memr y,HADM,1,JINT'
-refcount=: 3 : 'memr y,HADC,1,JINT'
-
 nountype =: 17 b.&16b1fffff  NB. just the noun-type part of y, removing upper flag bits
 
 NB. =========================================================
@@ -45,12 +34,6 @@ end.
 )
 
 NB. =========================================================
-fullname=: 3 : 0
-t=. y-.' '
-t,('_'~:{:t)#'_base_'
-)
-
-NB. =========================================================
 mbxcheck=: 3 : 0
 x=. 15!:12 y                  NB. 3 col integer matrix
 b=. 0={:"1 x                  NB. selects code 0
@@ -72,16 +55,16 @@ settypeshape=: 3 : 0
 'name type shape'=: y
 type =: nountype type
 rank=. #shape
-sad=. symget <fullname name
-'bad name' assert sad
-had=. 1{s=. memr sad,0 4,JINT
+had=. gethad name
 'flag msize'=. memr had,HADFLAG,2,JINT
 'not mapped and writeable' assert 2=flag
 size=. (JTYPES i.type){JSIZES
 ts=. size**/shape
 'msize too small' assert ts<:msize
 type memw had,HADT,1,JINT
-((*/shape),rank,shape) memw had,HADN,(2+rank),JINT
+(*/shape) memw had,HADN,1,JINT
+rank setHADR had
+shape memw had,HADS,(#shape),JINT
 i.0 0
 )
 

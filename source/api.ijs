@@ -1,17 +1,71 @@
 NB. jmf api
-
+0 : 0
+807 made changes to the header that affect jmf J code
+before 807 - HADR field bytes are (lilendian) rrrr (j32) rrrrrrrr (j64)
+after  807 - HADR field bytes are (lilendian) rrhh (j32) rrhhxxxx (j64)
+flipped for bigendian (fill,hh,rr)
+hh field flags must not be touched by jmf
+newheader is 1 if 807 header format
+)
+IFBE=: 'a'~:{.2 ic a.i.'a'
 SZI=: IF64{4 8     NB. sizeof integer - 4 for 32 bit and 8 for 64 bit
 
 NB. J array header byte offsets
 NB. offset flag msize type refcnt elementcnt rank shap
 'HADK HADFLAG HADM HADT HADC HADN HADR HADS'=: SZI*i.8
+HADRUS=: HADR+IFBE*IF64{2 6 NB. address of rank US bytes
 HADCN=: <.HADC%SZI
-
 HSN=: 7+64         NB. jmf header size in JINTs
 HS=: SZI*HSN       NB. jmf header size in bytes
 AFRO=: 1           NB. header flag - readonly
 AFNJA=: 2          NB. header flag - non-J allocation
 NULLPTR=: <0
+gethad=: 3 : 0
+sad=. symget <fullname y
+'bad name' assert sad
+1{memr sad,0 4,JINT
+)
+symget=: 15!:6
+symset=: 15!:7
+allochdr=: 3 : 'r[2 setHADC r=.15!:8 y'
+freehdr=: 15!:9
+msize=: 3 : 'memr y,HADM,1,JINT'
+fullname=: 3 : 0
+t=. y-.' '
+t,('_'~:{:t)#'_base_'
+)
+newheader=: 0~:memr (gethad'SZI_jmf_'),HADR,1,JINT
+
+setheader=: 4 : 0
+if. newheader do.
+ (6{.x) memw y,0,6,JINT
+ (6{x)  setHADR y
+ (7}.x) memw y,HADS,(#7}.x),JINT
+else.
+ x memw y,0,(#x),JINT
+end.
+)
+
+getHADR=: 3 : 0
+if. newheader do.
+ _1 (3!:4) memr y,HADRUS,2,JCHAR
+else.
+ memr y,HADR,1,JINT
+end.
+)
+
+setHADR=: 4 : 0
+if. newheader do.
+ (1 (3!:4) x) memw y,HADRUS,2,JCHAR
+else.
+ x memw y,HADR,1,JINT
+end.
+)
+
+getHADC=: 3 : '  memr y,HADC,1,JINT'
+setHADC=: 4 : 'x memw y,HADC,1,JINT'
+refcount=: getHADC
+
 
 NB. =========================================================
 NB. conditional definitions
@@ -71,3 +125,5 @@ if. _1 = 4!:0<'mappings' do.
 end.
 empty''
 )
+
+

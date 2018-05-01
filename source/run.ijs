@@ -1,4 +1,4 @@
 
 load 'jmf'
-load '~Addons/data/jmf/source/test/testjmf.ijs'
-load '~Addons/data/jmf/source/test/testdata.ijs'
+load '~Addons/data/jmf/test/testjmf.ijs'
+load '~Addons/data/jmf/test/testdata.ijs'
