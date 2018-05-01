@@ -1,6 +1,6 @@
 NB. build
 
-writesourcex_jp_ '~Addons/data/jmf/source/source';'~Addons/data/jmf/jmf.ijs'
+writesourcex_jp_ '~Addons/data/jmf/source';'~Addons/data/jmf/jmf.ijs'
 
 (jpath '~addons/data/jmf/jmf.ijs') (fcopynew ::0:) jpath '~Addons/data/jmf/jmf.ijs'
 
