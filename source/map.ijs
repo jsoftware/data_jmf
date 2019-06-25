@@ -37,7 +37,7 @@ NB.  however, we need to keep the length in the mapping list.
   mh=. ts
 NB.  hard wire some values : protection flags (3) == read & write
 NB.     mapping flags (2) == private;  (1) == shared
-  fad=. >0{ c_mmap (<0);ts;(OR ro}. PROT_WRITE, PROT_READ);MAP_SHARED;fh;0
+  fad=. >0{ c_mmap (<0);ts;(OR ro}. PROT_WRITE, PROT_READ);(ro{MAP_SHARED,MAP_PRIVATE);fh;0
   if. fad e. 0 _1 do.
     'bad view' assert 0[free fh,mh,0
   end.
