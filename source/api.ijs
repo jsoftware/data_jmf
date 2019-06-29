@@ -86,6 +86,7 @@ else.
   FALSE=: 0
   FILE_BEGIN=: 0
   FILE_END=: 2
+  FILE_MAP_COPY=: 1
   FILE_MAP_READ=: 4
   FILE_MAP_WRITE=: 2
   FILE_SHARE_READ=: 1
@@ -99,7 +100,7 @@ else.
   TRUNCATE_EXISTING=: 5
 
   j=. (GENERIC_READ+GENERIC_WRITE),PAGE_READWRITE,FILE_MAP_WRITE
-  RW=: j,:GENERIC_READ,PAGE_READONLY,FILE_MAP_READ
+  RW=: j,:GENERIC_READ,PAGE_READONLY,FILE_MAP_COPY[FILE_MAP_READ
 
   CloseHandleR=: 'kernel32 CloseHandle > i x'&(15!:0)
   CreateFileMappingR=: 'kernel32 CreateFileMappingW > x x * i i i *w'&(15!:0)

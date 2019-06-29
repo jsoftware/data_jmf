@@ -49,9 +49,9 @@ else.
   'bad noun name'assert ('_'={:name)*._1=nc<name
   fh=. _1
   fn=. ''
-  mh=. OpenFileMappingR (ro{FILE_MAP_WRITE,FILE_MAP_READ);0;uucp sn,{.a.
+  mh=. OpenFileMappingR (ro{FILE_MAP_WRITE,FILE_MAP_COPY);0;uucp sn,{.a.
   if. mh=0 do. assert 0[CloseHandleR fh['bad mapping' end.
-  fad=. MapViewOfFileR mh;FILE_MAP_WRITE;0;0;0
+  fad=. MapViewOfFileR mh;(ro{FILE_MAP_WRITE,FILE_MAP_COPY);0;0;0
   if. fad=0 do. assert 0[CloseHandleR mh[CloseHandleR fh['bad view' end.
   had=. fad
   hs=: 0

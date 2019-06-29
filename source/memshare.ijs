@@ -3,18 +3,19 @@ NB. jmf memshare
 NB. =========================================================
 NB.*memshare v share memory with a process
 NB.
-NB. Form: {mapping-address} =: memshare {'share-name'}
+NB. Form: {mapping-address} =: memshare {'share-name'} [; readonly ]
 NB.
 NB. this permits sharing memory with a non-J process
 NB.
 NB. memshare and memshareclose contributed by Tony Zackin
 memshare=: 3 : 0
 bNo_Inherit_Handle=. FALSE
+'y ro'=. 2{.(boxopen y),<0
 lpShareName=. y,{.a.
-mh=. OpenFileMappingR (FILE_MAP_READ+FILE_MAP_WRITE); bNo_Inherit_Handle; uucp lpShareName
+mh=. OpenFileMappingR (ro{FILE_MAP_WRITE,FILE_MAP_COPY); bNo_Inherit_Handle; uucp lpShareName
 ('Unable to map ',y) assert mh~:0
 
-addr=. MapViewOfFileR mh; (FILE_MAP_READ+FILE_MAP_WRITE); 0; 0; 0
+addr=. MapViewOfFileR mh; (ro{FILE_MAP_WRITE,FILE_MAP_COPY); 0; 0; 0
 if. addr=0 do. 'MapViewOfFile failed' assert 0[CloseHandleR mh end.
 
 NB. Add share-name to col. 1, mapping handle to col. 2, and mapping address to

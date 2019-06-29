@@ -25,7 +25,9 @@ c=. #mappings
 'bad noun name'assert ('_'={:name)*._1=nc<name
 
 ro=. 0~:ro
-aa=. AFNJA+AFRO*ro     NB. readwrite/readonly array access
+NB. if readonly then use flag MAP_PRIVATE or FILE_MAP_COPY
+NB. so that content never written back to original file
+aa=. AFNJA+0[AFRO*ro       NB. readwrite/readonly array access
 
 if. IFUNIX do.
   'Unix sharename must be same as filename' assert (sn-:'')+.sn-:fn
@@ -43,7 +45,7 @@ NB.     mapping flags (2) == private;  (1) == shared
   end.
 else.
   'fa ma va'=. ro{RW     NB. readwrite/readonly for file, map, view access
-  fh=. CreateFileR (uucp fn,{.a.);fa;(FILE_SHARE_READ+FILE_SHARE_WRITE);NULLPTR;OPEN_EXISTING;0;0
+  fh=. CreateFileR (uucp fn,{.a.);fa;(OR ro}. FILE_SHARE_WRITE, FILE_SHARE_READ);NULLPTR;OPEN_EXISTING;0;0
   'bad file name/access'assert fh~:_1
   ts=. GetFileSizeR fh
   mh=: CreateFileMappingR fh;NULLPTR;ma;0;0;(0=#sn){(uucp sn,{.a.);<NULLPTR
