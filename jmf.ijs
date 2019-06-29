@@ -29,7 +29,7 @@ doc=: 0 : 0
       2 refs
 
   unmapall''                  - unmap all
-  createjmf filename;msize    - creates jmf file as empty vector
+  createjmf filename;msize    - creates jmf file as empty vector (self-describing)
   share name;sharedname[;ro]  - share 'sharedname' as name
   showmap''                   - show all maps
 )
@@ -60,7 +60,7 @@ symget=: 15!:6
 symset=: 15!:7
 allochdr=: 3 : 'r[2 setHADC r=.15!:8 y'
 freehdr=: 15!:9
-msize=: 3 : 'memr y,HADM,1,JINT'
+gethadmsize=: 3 : 'memr y,HADM,1,JINT'
 fullname=: 3 : 0
 t=. y-.' '
 t,('_'~:{:t)#'_base_'
@@ -292,7 +292,7 @@ else.
   if. fad=0 do. assert 0[CloseHandleR mh[CloseHandleR fh['bad view' end.
   had=. fad
   hs=: 0
-  ts=. msize had
+  ts=. gethadmsize had
   mappings=: mappings,name;fn;sn;fh;mh;fad;had;ts
   (name)=: symset had
   i.0 0
@@ -315,7 +315,7 @@ i. 0 0
 showmap=: 3 : 0
 h=. 'name';'fn';'sn';'fh';'mh';'address';'header';'ts';'msize';'refs'
 hads=. 6{"1 mappings
-h,mappings,.(msize each hads),.refcount each hads
+h,mappings,.(gethadmsize each hads),.refcount each hads
 )
 map=: 3 : 0
 0 map y

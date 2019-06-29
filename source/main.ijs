@@ -55,7 +55,7 @@ else.
   if. fad=0 do. assert 0[CloseHandleR mh[CloseHandleR fh['bad view' end.
   had=. fad
   hs=: 0
-  ts=. msize had
+  ts=. gethadmsize had
   mappings=: mappings,name;fn;sn;fh;mh;fad;had;ts
   (name)=: symset had  NB. set name to address header
   i.0 0
@@ -85,5 +85,5 @@ NB.*showmap v show all mappings
 showmap=: 3 : 0
 h=. 'name';'fn';'sn';'fh';'mh';'address';'header';'ts';'msize';'refs'
 hads=. 6{"1 mappings
-h,mappings,.(msize each hads),.refcount each hads
+h,mappings,.(gethadmsize each hads),.refcount each hads
 )

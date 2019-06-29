@@ -26,7 +26,7 @@ doc=: 0 : 0
       2 refs
 
   unmapall''                  - unmap all
-  createjmf filename;msize    - creates jmf file as empty vector
+  createjmf filename;msize    - creates jmf file as empty vector (self-describing)
   share name;sharedname[;ro]  - share 'sharedname' as name
   showmap''                   - show all maps
 )
