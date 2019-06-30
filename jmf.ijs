@@ -60,7 +60,7 @@ symget=: 15!:6
 symset=: 15!:7
 allochdr=: 3 : 'r[2 setHADC r=.15!:8 y'
 freehdr=: 15!:9
-gethadmsize=: 3 : 'memr y,HADM,1,JINT'
+msize=: gethadmsize=: 3 : 'memr y,HADM,1,JINT'
 fullname=: 3 : 0
 t=. y-.' '
 t,('_'~:{:t)#'_base_'

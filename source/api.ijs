@@ -30,7 +30,7 @@ symset=: 15!:7 NB. set name to address header
 NB. must set HADC in same sentence as 15!:8 !!!
 allochdr=: 3 : 'r[2 setHADC r=.15!:8 y'
 freehdr=: 15!:9 NB. free header
-gethadmsize=: 3 : 'memr y,HADM,1,JINT'
+msize=: gethadmsize=: 3 : 'memr y,HADM,1,JINT'
 fullname=: 3 : 0
 t=. y-.' '
 t,('_'~:{:t)#'_base_'
