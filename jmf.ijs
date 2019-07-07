@@ -390,7 +390,7 @@ elseif. 1 do.
   had=. allochdr 127
   'JBOXED (non-jmf) not supported' assert JBOXED~:type
   bx=. JBOXED=type
-  hs=. (+/hsize)*asize=. JSIZES {~ JTYPES i. type
+  hs=. +/hsize [ asize=. JSIZES {~ JTYPES i. type
   lshape=. bx}.<.(ts-hs)%(*/tshape)*asize
   d=. sfu hs+-/ufs fad,had
   h=. d,aa,ts,type,1,(*/lshape,tshape),((-.bx)+#tshape),lshape,tshape
