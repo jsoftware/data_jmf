@@ -344,10 +344,10 @@ aa=. AFNJA+0[AFRO*ro
 if. IFUNIX do.
   'Unix sharename must be same as filename' assert (sn-:'')+.sn-:fn
   ts=. 1!:4 <fn
-  fh=. >0 { c_open fn;((0[ro){O_RDWR,O_RDONLY);0
+  fh=. >0 { c_open fn;(ro{O_RDWR,O_RDONLY);0
   'bad file name/access' assert fh~:_1
   mh=. ts
-  fad=. >0{ c_mmap (<0);ts;(OR (0[ro)}. PROT_WRITE, PROT_READ);(ro{MAP_SHARED,MAP_PRIVATE);fh;0
+  fad=. >0{ c_mmap (<0);ts;(OR ro}. PROT_WRITE, PROT_READ);(ro{MAP_SHARED,MAP_PRIVATE);fh;0
   if. fad e. 0 _1 do.
     'bad view' assert 0[free fh,mh,0
   end.
