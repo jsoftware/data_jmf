@@ -24,10 +24,9 @@ c=. #mappings
 4!:55 ::] <name
 'bad noun name'assert ('_'={:name)*._1=nc<name
 
+NB. ro sets AFRO - a new option would be required for MAP_PRIVATE or FILE_MAP_COPY
 ro=. 0~:ro
-NB. if readonly then use flag MAP_PRIVATE or FILE_MAP_COPY
-NB. so that content never written back to original file
-aa=. AFNJA+0[AFRO*ro       NB. readwrite/readonly array access
+aa=. AFNJA+AFRO*ro       NB. readwrite/readonly array access
 
 if. IFUNIX do.
   'Unix sharename must be same as filename' assert (sn-:'')+.sn-:fn
@@ -39,13 +38,16 @@ NB.  however, we need to keep the length in the mapping list.
   mh=. ts
 NB.  hard wire some values : protection flags (3) == read & write
 NB.     mapping flags (2) == private;  (1) == shared
-  fad=. >0{ c_mmap (<0);ts;(OR (0[ro)}. PROT_WRITE, PROT_READ);(ro{MAP_SHARED,MAP_PRIVATE);fh;0
+  NB. fad=. >0{ c_mmap (<0);ts;(OR (0[ro)}. PROT_WRITE, PROT_READ);(ro{MAP_SHARED,MAP_PRIVATE);fh;0
+  fad=. >0{ c_mmap (<0);ts;(OR ro}. PROT_WRITE, PROT_READ);MAP_SHARED;fh;0
+
   if. fad e. 0 _1 do.
     'bad view' assert 0[free fh,mh,0
   end.
 else.
   'fa ma va'=. ro{RW     NB. readwrite/readonly for file, map, view access
-  fh=. CreateFileR (uucp fn,{.a.);fa;(OR ro}. FILE_SHARE_WRITE, FILE_SHARE_READ);NULLPTR;OPEN_EXISTING;0;0
+  NB. concurrent RO and RW require FILE_SHARE_WRITE+FILE_SHARE_READ for both
+  fh=. CreateFileR (uucp fn,{.a.);fa;(OR FILE_SHARE_WRITE, FILE_SHARE_READ);NULLPTR;OPEN_EXISTING;0;0
   'bad file name/access'assert fh~:_1
   ts=. GetFileSizeR fh
   mh=: CreateFileMappingR fh;NULLPTR;ma;0;0;(0=#sn){(uucp sn,{.a.);<NULLPTR

@@ -128,7 +128,7 @@ else.
   TRUNCATE_EXISTING=: 5
 
   j=. (GENERIC_READ+GENERIC_WRITE),PAGE_READWRITE,FILE_MAP_WRITE
-  RW=: j,:GENERIC_READ,PAGE_READONLY,FILE_MAP_COPY[FILE_MAP_READ
+  RW=: j,:GENERIC_READ,PAGE_READONLY,FILE_MAP_READ
 
   CloseHandleR=: 'kernel32 CloseHandle > i x'&(15!:0)
   CreateFileMappingR=: 'kernel32 CreateFileMappingW > x x * i i i *w'&(15!:0)
@@ -286,9 +286,9 @@ else.
   'bad noun name'assert ('_'={:name)*._1=nc<name
   fh=. _1
   fn=. ''
-  mh=. OpenFileMappingR (ro{FILE_MAP_WRITE,FILE_MAP_COPY);0;uucp sn,{.a.
+  mh=. OpenFileMappingR (ro{FILE_MAP_WRITE,FILE_MAP_READ);0;uucp sn,{.a.
   if. mh=0 do. assert 0[CloseHandleR fh['bad mapping' end.
-  fad=. MapViewOfFileR mh;(ro{FILE_MAP_WRITE,FILE_MAP_COPY);0;0;0
+  fad=. MapViewOfFileR mh;(ro{FILE_MAP_WRITE,FILE_MAP_READ);0;0;0
   if. fad=0 do. assert 0[CloseHandleR mh[CloseHandleR fh['bad view' end.
   had=. fad
   hs=: 0
@@ -337,9 +337,8 @@ c=. #mappings
 'sharename already mapped'assert (''-:sn)+.c=(2{"1 mappings)i.<sn
 4!:55 ::] <name
 'bad noun name'assert ('_'={:name)*._1=nc<name
-
 ro=. 0~:ro
-aa=. AFNJA+0[AFRO*ro
+aa=. AFNJA+AFRO*ro
 
 if. IFUNIX do.
   'Unix sharename must be same as filename' assert (sn-:'')+.sn-:fn
@@ -347,13 +346,16 @@ if. IFUNIX do.
   fh=. >0 { c_open fn;((0]ro){O_RDWR,O_RDONLY);0
   'bad file name/access' assert fh~:_1
   mh=. ts
-  fad=. >0{ c_mmap (<0);ts;(OR (0[ro)}. PROT_WRITE, PROT_READ);(ro{MAP_SHARED,MAP_PRIVATE);fh;0
+
+  fad=. >0{ c_mmap (<0);ts;(OR ro}. PROT_WRITE, PROT_READ);MAP_SHARED;fh;0
+
   if. fad e. 0 _1 do.
     'bad view' assert 0[free fh,mh,0
   end.
 else.
   'fa ma va'=. ro{RW
-  fh=. CreateFileR (uucp fn,{.a.);fa;(OR ro}. FILE_SHARE_WRITE, FILE_SHARE_READ);NULLPTR;OPEN_EXISTING;0;0
+
+  fh=. CreateFileR (uucp fn,{.a.);fa;(OR FILE_SHARE_WRITE, FILE_SHARE_READ);NULLPTR;OPEN_EXISTING;0;0
   'bad file name/access'assert fh~:_1
   ts=. GetFileSizeR fh
   mh=: CreateFileMappingR fh;NULLPTR;ma;0;0;(0=#sn){(uucp sn,{.a.);<NULLPTR
@@ -448,10 +450,10 @@ memshare=: 3 : 0
 bNo_Inherit_Handle=. FALSE
 'y ro'=. 2{.(boxopen y),<0
 lpShareName=. y,{.a.
-mh=. OpenFileMappingR (ro{FILE_MAP_WRITE,FILE_MAP_COPY); bNo_Inherit_Handle; uucp lpShareName
+mh=. OpenFileMappingR (ro{FILE_MAP_WRITE,FILE_MAP_READ); bNo_Inherit_Handle; uucp lpShareName
 ('Unable to map ',y) assert mh~:0
 
-addr=. MapViewOfFileR mh; (ro{FILE_MAP_WRITE,FILE_MAP_COPY); 0; 0; 0
+addr=. MapViewOfFileR mh; (ro{FILE_MAP_WRITE,FILE_MAP_READ); 0; 0; 0
 if. addr=0 do. 'MapViewOfFile failed' assert 0[CloseHandleR mh end.
 ".(_1=4!:0<'mapTable')#'mapTable=:i.0,3'
 mapTable=: mapTable, y; mh; addr
