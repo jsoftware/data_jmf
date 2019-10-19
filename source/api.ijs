@@ -109,9 +109,10 @@ else.
   PAGE_READONLY=: 2
   PAGE_READWRITE=: 4
   TRUNCATE_EXISTING=: 5
-
-  j=. (GENERIC_READ+GENERIC_WRITE),PAGE_READWRITE,FILE_MAP_WRITE
-  RW=: j,:GENERIC_READ,PAGE_READONLY,FILE_MAP_READ NB. copy
+  NB.                
+  t=.           (GENERIC_READ+GENERIC_WRITE), PAGE_READWRITE,  FILE_MAP_WRITE
+  t=.       t,: GENERIC_READ,                 PAGE_READONLY,   FILE_MAP_READ
+  mtflags=: t,  (GENERIC_READ+GENERIC_WRITE), PAGE_READWRITE,  FILE_MAP_COPY
 
   CloseHandleR=: 'kernel32 CloseHandle > i x'&(15!:0)
   CreateFileMappingR=: 'kernel32 CreateFileMappingW > x x * i i i *w'&(15!:0)

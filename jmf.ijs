@@ -130,8 +130,9 @@ else.
   PAGE_READWRITE=: 4
   TRUNCATE_EXISTING=: 5
 
-  j=. (GENERIC_READ+GENERIC_WRITE),PAGE_READWRITE,FILE_MAP_WRITE
-  RW=: j,:GENERIC_READ,PAGE_READONLY,FILE_MAP_READ
+  t=.           (GENERIC_READ+GENERIC_WRITE), PAGE_READWRITE,  FILE_MAP_WRITE
+  t=.       t,: GENERIC_READ,                 PAGE_READONLY,   FILE_MAP_READ
+  mtflags=: t,  (GENERIC_READ+GENERIC_WRITE), PAGE_READWRITE,  FILE_MAP_COPY
 
   CloseHandleR=: 'kernel32 CloseHandle > i x'&(15!:0)
   CreateFileMappingR=: 'kernel32 CreateFileMappingW > x x * i i i *w'&(15!:0)
@@ -307,7 +308,7 @@ if. IFUNIX do.
   fad=. >0{ c_mmap (<0);ts;FMP;FMM;fh;0
   if. fad e. 0 _1 do. 'bad view' assert 0[free fh,mh,0 end.
 else.
-  'fa ma va'=. ro{RW
+  'fa ma va'=. ro{mtflags
 
   fh=. CreateFileR (uucp fn,{.a.);fa;(OR FILE_SHARE_WRITE, FILE_SHARE_READ);NULLPTR;OPEN_EXISTING;0;0
   'bad file name/access'assert fh~:_1

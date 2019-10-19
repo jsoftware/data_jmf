@@ -14,7 +14,7 @@ if. IFUNIX do.
   fad=. >0{ c_mmap (<0);ts;FMP;FMM;fh;0
   if. fad e. 0 _1 do. 'bad view' assert 0[free fh,mh,0 end.
 else.
-  'fa ma va'=. ro{RW     NB. readwrite/readonly for file, map, view access
+  'fa ma va'=. ro{mtflags NB. open/map/view flags
   NB. concurrent RO and RW require FILE_SHARE_WRITE+FILE_SHARE_READ for both
   fh=. CreateFileR (uucp fn,{.a.);fa;(OR FILE_SHARE_WRITE, FILE_SHARE_READ);NULLPTR;OPEN_EXISTING;0;0
   'bad file name/access'assert fh~:_1
