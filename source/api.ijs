@@ -10,6 +10,12 @@ newheader is 1 if 807 header format
 IFBE=: 'a'~:{.2 ic a.i.'a'
 SZI=: IF64{4 8     NB. sizeof integer - 4 for 32 bit and 8 for 64 bit
 
+NB. index into mappings/showmap - MAPMSIZE and MAPREFS only in showmap
+'MAPNAME MAPFN MAPSN MAPFH MAPMH MAPADDRESS MAPHEADER MAPFSIZE MAPJMF MAPMT MAPMSIZE MAPREFS'=: i.12
+
+NB. mt - maptype
+'MTRW MTRO MTCOW'=: i.3
+
 NB. J array header byte offsets
 NB. offset flag msize type refcnt elementcnt rank shap
 'HADK HADFLAG HADM HADT HADC HADN HADR HADS'=: SZI*i.8
@@ -81,6 +87,10 @@ if. IFUNIX do.
   c_lseek=: 'lseek x i x i' api
   c_mmap=: 'mmap * * x i i i x' api
   c_munmap=: 'munmap i * x' api
+  NB.           c_open    c_mmap-prot  c_mmap-map
+  t=.           O_RDWR,   PROT_WRITE,  MAP_SHARED  NB. normal mapping         
+  t=. t,:       O_RDONLY, PROT_READ,   MAP_SHARED  NB. ro mapping
+  mtflags=:  t, O_RDWR,   PROT_WRITE,  MAP_PRIVATE NB. cow mapping
 else.
   CREATE_ALWAYS=: 2
   CREATE_NEW=: 1

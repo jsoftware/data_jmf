@@ -35,34 +35,6 @@ i.0 0
 )
 
 NB. =========================================================
-NB.*share v share a mapped file
-share=: 3 : 0
-'name sn ro'=. 3{.y,<0
-sn=. '/' (('\'=sn)#i.#sn)} sn NB. / not allowed in win sharename
-if. IFUNIX do.
-  map name;sn;sn;ro
-else.
-  name=. fullname name
-  c=. #mappings
-  assert c=({."1 mappings)i.<name['noun already mapped'
-  4!:55 ::] <name
-  'bad noun name'assert ('_'={:name)*._1=nc<name
-  fh=. _1
-  fn=. ''
-  mh=. OpenFileMappingR (ro{FILE_MAP_WRITE,FILE_MAP_READ);0;uucp sn,{.a. NB. copy
-  if. mh=0 do. assert 0[CloseHandleR fh['bad mapping' end.
-  fad=. MapViewOfFileR mh;(ro{FILE_MAP_WRITE,FILE_MAP_READ);0;0;0 NB. copy
-  if. fad=0 do. assert 0[CloseHandleR mh[CloseHandleR fh['bad view' end.
-  had=. fad
-  hs=: 0
-  ts=. gethadmsize had
-  mappings=: mappings,name;fn;sn;fh;mh;fad;had;ts
-  (name)=: symset had  NB. set name to address header
-  i.0 0
-end.
-)
-
-NB. =========================================================
 getflagsad=: 3 : 0
 SZI+1{memr (symget <fullname y),0 4,JINT
 )
@@ -83,7 +55,7 @@ i. 0 0
 NB. =========================================================
 NB.*showmap v show all mappings
 showmap=: 3 : 0
-h=. 'name';'fn';'sn';'fh';'mh';'address';'header';'ts';'msize';'refs'
+h=. 'name';'fn';'sn';'fh';'mh';'address';'header';'fsize';'jmf';'mt';'msize';'refs'
 hads=. 6{"1 mappings
 h,mappings,.(gethadmsize each hads),.refcount each hads
 )

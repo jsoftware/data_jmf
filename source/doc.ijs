@@ -1,32 +1,29 @@
 
 doc=: 0 : 0
- map name;filename [;sharename;readonly]
-       - map jmf file (self-describing)
+map name;filename [;sharename;mt]
+ map jmf file (self-describing)
 
- opt map name;filename [;sharename;readonly]
-       - map data file (opt is description)
+opt map name;filename [;sharename;mt]
+ map data file (opt is description)
 
-     where:  opt=type [;trailing_shape]
+ where:  opt=type [;trailing_shape]
 
-        types are defined in dll.ijs as:
-            JB01      boolean
-            JCHAR     character
-            JCHAR2    unicode
-            JCHAR4    unicode4
-            JINT      integer
-            JFL       floating point
-            JCMPX     complex
-            JSB       symbol
+ types defined in dll.ijs as: JB01,JCHAR,JCHAR2,JCHAR4,JINT,JFL,JCMPX,JSB
 
-         trailing_shape= }. shape    (default '')
+ trailing_shape= }. shape    (default '')
 
- [force] unmap name
-      0 ok
-      1 not mapped
-      2 refs
+mt (map type):
+ 0 - MTRW  - default read/write mapping 
+ 1 - MTRO  - read-only mapping - map jmf file copies header to private area
+ 2 - MTCOW - copy-on-write - private mapping - changes not reflected in file
 
-  unmapall''                  - unmap all
-  createjmf filename;msize    - creates jmf file as empty vector (self-describing)
-  share name;sharedname[;ro]  - share 'sharedname' as name
-  showmap''                   - show all maps
+[force] unmap name - result 0 ok, 1 not mapped, 2 refs prevent unmap
+
+unmapall''                  - unmap all
+createjmf filename;msize    - creates jmf file as empty vector (self-describing)
+share name;sharename[;mt]  - share 'sharename' as name
+showmap''                   - map info with col headers and extra info
+mappings                     - map info
+
+MAPNAME,MAPFN,... showmap col indexes 
 )
