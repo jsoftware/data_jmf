@@ -305,7 +305,7 @@ if. IFUNIX do.
   fad=. >0{ c_mmap (<0);ts;FMP;FMM;fh;0
   if. fad e. 0 _1 do. 'bad view' assert 0[free fh,mh,0 end.
 else.
-  'Win sharename must not have /' assert '/'e.sn
+  'Win sharename must not have /' assert -.'/'e.sn
   'fa ma va'=. ro{mtflags
 
 
