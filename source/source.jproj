@@ -7,7 +7,6 @@ init.ijs
 doc.ijs
 api.ijs
 util.ijs
-defs.ijs
 errors.ijs
 main.ijs
 map.ijs

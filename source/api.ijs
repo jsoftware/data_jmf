@@ -14,7 +14,7 @@ NB. index into mappings/showmap - MAPMSIZE and MAPREFS only in showmap
 'MAPNAME MAPFN MAPSN MAPFH MAPMH MAPADDRESS MAPHEADER MAPFSIZE MAPJMF MAPMT MAPMSIZE MAPREFS'=: i.12
 
 NB. mt - maptype
-'MTRW MTRO MTCOW'=: i.3
+'MTRW MTRO MTCW'=: i.3 NB. normal, read-only, copy on write
 
 NB. J array header byte offsets
 NB. offset flag msize type refcnt elementcnt rank shap

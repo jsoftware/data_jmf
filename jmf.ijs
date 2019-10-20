@@ -3,30 +3,28 @@ jsystemdefs 'hostdefs'
 coinsert 'jdefs'
 
 doc=: 0 : 0
-map name;filename [;sharename;mt]
+map name;filename [;sharename [;mt] ]
  map jmf file (self-describing)
 
-opt map name;filename [;sharename;mt]
- map data file (opt is description)
+(type [;tshape]) map name;filename [;sharename [;mt] ]
+ map data file
 
- where:  opt=type [;trailing_shape]
+ types from dll.ijs: JB01,JCHAR,JCHAR2,JCHAR4,JINT,JFL,JCMPX,JSB
 
- types defined in dll.ijs as: JB01,JCHAR,JCHAR2,JCHAR4,JINT,JFL,JCMPX,JSB
-
- trailing_shape= }. shape    (default '')
+ tshape - trailing shape - }.shape    (default '')
 
 mt (map type):
- 0 - MTRW  - default read/write mapping 
- 1 - MTRO  - read-only mapping - map jmf file copies header to private area
- 2 - MTCOW - copy-on-write - private mapping - changes not reflected in file
+ 0 - MTRW - default read/write mapping 
+ 1 - MTRO - read-only mapping - map jmf file copies header to private area
+ 2 - MTCW - copy-on-write - private mapping - changes not reflected in file
 
 [force] unmap name - result 0 ok, 1 not mapped, 2 refs prevent unmap
 
-unmapall''                  - unmap all
-createjmf filename;msize    - creates jmf file as empty vector (self-describing)
-share name;sharename[;mt]  - share 'sharename' as name
-showmap''                   - map info with col headers and extra info
-mappings                     - map info
+createjmf filename;msize  - create jmf file as empty vector (self-describing)
+unmapall''                - unmap all
+showmap''                 - map info with col headers and extras
+mappings                  - map info
+share name;sharename[;mt] - share 'sharename' as name
 
 MAPNAME,MAPFN,... showmap col indexes 
 )
@@ -41,7 +39,7 @@ newheader is 1 if 807 header format
 IFBE=: 'a'~:{.2 ic a.i.'a'
 SZI=: IF64{4 8
 'MAPNAME MAPFN MAPSN MAPFH MAPMH MAPADDRESS MAPHEADER MAPFSIZE MAPJMF MAPMT MAPMSIZE MAPREFS'=: i.12
-'MTRW MTRO MTCOW'=: i.3
+'MTRW MTRO MTCW'=: i.3
 'HADK HADFLAG HADM HADT HADC HADN HADR HADS'=: SZI*i.8
 HADRUS=: HADR+IFBE*IF64{2 6
 HADCN=: <.HADC%SZI
@@ -213,7 +211,6 @@ if. ts>:HS do.
   *./((HS,ts-HS)=0 2{d),1 2 4 8 16 32 131072 262144 65536 e.~ nountype 3{d
 else. 0 end.
 )
-ERROR_NOT_ENOUGH_MEMORY=: 8
 j=. <;._2 (0 : 0)
 1  ERROR_INVALID_FUNCTION
 2  ERROR_FILE_NOT_FOUND
@@ -310,19 +307,21 @@ if. IFUNIX do.
 else.
   'fa ma va'=. ro{mtflags
 
+
+
   fh=. CreateFileR (uucp fn,{.a.);fa;(OR FILE_SHARE_WRITE, FILE_SHARE_READ);NULLPTR;OPEN_EXISTING;0;0
-  'bad file name/access'assert fh~:_1
+  if. hf=_1 do.
+   6!:3[2
+   fh=. CreateFileR (uucp fn,{.a.);fa;(OR FILE_SHARE_WRITE, FILE_SHARE_READ);NULLPTR;OPEN_EXISTING;0;0
+   'bad file name/access'assert fh~:_1
+  end. 
   mh=: CreateFileMappingR fh;NULLPTR;ma;0;0;(0=#sn){(uucp sn,{.a.);<NULLPTR
   if. mh=0 do. 'bad mapping'assert 0[free fh,0,0 end.
   fad=. MapViewOfFileR mh;va;0;0;0
   if. fad=0 do.
     errno=. GetLastError''
     free fh,mh,0
-    if. ERROR_NOT_ENOUGH_MEMORY-:errno do.
-      'not enough memory' assert 0
-    else.
-      'bad view' assert 0
-    end.
+    0 assert~;(8=errno){'bad view';'not enough memory'
   end.
 end.
 name;fn;sn;fh;mh;fad;0;ts;0;ro
@@ -403,6 +402,7 @@ if. -.jmf do.
  d=. sfu HS+-/ufs fad,had
  d memw had,0,1,JINT
 end.
+((>MAPFSIZE{m)-HS_jmf_*jmf) memw had,HADM,1,JINT
 i.0 0
 )
 

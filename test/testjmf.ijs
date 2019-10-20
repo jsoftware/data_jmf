@@ -58,7 +58,7 @@ remap_jmf_'abc'
 assert m-:mappings
 unmap_jmf_'abc'
 
-map_jmf_ 'abc';F;'';MTCOW_jmf_ NB. COW (copy on write) maptype
+map_jmf_ 'abc';F;'';MTCW_jmf_ NB. COW (copy on write) maptype
 assert 'ghi'-:abc
 abc=: 'jkl'
 assert abc-:'jkl'
@@ -108,8 +108,3 @@ unmap_jmf_'abc'
 )
 
 testmaptype''
-
-
-
-
-

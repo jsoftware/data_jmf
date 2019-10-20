@@ -1,10 +1,4 @@
 NB. jmf - main definitions except map,unmap
-NB.
-NB.  additem
-NB.  createjmf
-NB.  share
-NB.  showle
-NB.  showmap
 
 NB. =========================================================
 NB.*createjmf v create mapped file

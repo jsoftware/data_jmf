@@ -16,19 +16,21 @@ if. IFUNIX do.
 else.
   'fa ma va'=. ro{mtflags NB. open/map/view flags
   NB. concurrent RO and RW require FILE_SHARE_WRITE+FILE_SHARE_READ for both
+
+  NB. open can fail because of interference from other tasks (e.g., indexing)
   fh=. CreateFileR (uucp fn,{.a.);fa;(OR FILE_SHARE_WRITE, FILE_SHARE_READ);NULLPTR;OPEN_EXISTING;0;0
-  'bad file name/access'assert fh~:_1
+  if. hf=_1 do. NB. open can fail because of interference from other tasks (e.g., indexing)
+   6!:3[2
+   fh=. CreateFileR (uucp fn,{.a.);fa;(OR FILE_SHARE_WRITE, FILE_SHARE_READ);NULLPTR;OPEN_EXISTING;0;0
+   'bad file name/access'assert fh~:_1
+  end. 
   mh=: CreateFileMappingR fh;NULLPTR;ma;0;0;(0=#sn){(uucp sn,{.a.);<NULLPTR
   if. mh=0 do. 'bad mapping'assert 0[free fh,0,0 end.
   fad=. MapViewOfFileR mh;va;0;0;0
   if. fad=0 do.
     errno=. GetLastError''
     free fh,mh,0
-    if. ERROR_NOT_ENOUGH_MEMORY-:errno do.
-      'not enough memory' assert 0
-    else.
-      'bad view' assert 0
-    end.
+    0 assert~;(8=errno){'bad view';'not enough memory'
   end.
 end.
 name;fn;sn;fh;mh;fad;0;ts;0;ro NB. had and jmf values still required
@@ -99,11 +101,9 @@ i.0 0
 )
 
 NB. remap noun to get new filesize (resized in another task)
-NB. Jd uses in JdMTM - RO task gets new filesize set in WR task
-NB. duplicates code from unmap and map
+NB. Jd MTRO task gets new filesize set in MTRW task
 NB. header not freed/allocated/changed - except to point at new address for data
-NB. with new filesize option this could be used in Jd instead of unmap/map
-NB. HS used to set header new data address assumes jmf or jmf-ro
+NB. filesize option this could be used in Jd instead of unmap/map
 remap=: 3 : 0
 name=. fullname y
 row=. ({."1 mappings)i.<name
@@ -126,6 +126,7 @@ if. -.jmf do.
  d=. sfu HS+-/ufs fad,had
  d memw had,0,1,JINT NB. header updated to point at possibly new data
 end.
+((>MAPFSIZE{m)-HS_jmf_*jmf) memw had,HADM,1,JINT NB. new header msize
 i.0 0
 )
 
