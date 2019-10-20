@@ -14,6 +14,7 @@ if. IFUNIX do.
   fad=. >0{ c_mmap (<0);ts;FMP;FMM;fh;0
   if. fad e. 0 _1 do. 'bad view' assert 0[free fh,mh,0 end.
 else.
+  'Win sharename must not have /' assert '/'e.sn
   'fa ma va'=. ro{mtflags NB. open/map/view flags
   NB. concurrent RO and RW require FILE_SHARE_WRITE+FILE_SHARE_READ for both
 
@@ -54,7 +55,7 @@ sn=. '/' (('\'=sn)#i.#sn)} sn NB. / not allowed in win sharename
 name=. fullname name
 c=. #mappings
 
-'maptype must be 0 (normal), 1 (readonly), or 2 (COW - copy on write)' assert ro e. 0 1 2
+'maptype must be 0 (MTRW), 1 (MTRO), or 2 (MTCW - copy on write)' assert ro e. 0 1 2
 'name already mapped'assert c=({."1 mappings)i.<name
 'filename already mapped'assert c=(1{"1 mappings)i.<fn
 'sharename already mapped'assert (''-:sn)+.c=(2{"1 mappings)i.<sn
@@ -117,7 +118,7 @@ NB. unmap so map can be done
 'sn fh mh fad had'=. 5{.2}.m
 free fh,mh,fad
 
-NB. map to get possible new size
+NB. map to get new size
 m=. mapsub name;fn;sn;ro
 m=. (had;jmf) (MAPHEADER,MAPJMF)}m
 mappings=: m row}mappings
@@ -130,31 +131,9 @@ end.
 i.0 0
 )
 
-NB.! should use mapsub
 NB. =========================================================
 NB.*share v share a mapped file
 share=: 3 : 0
 'name sn ro'=. 3{.y,<0
-sn=. '/' (('\'=sn)#i.#sn)} sn NB. / not allowed in win sharename
-if. IFUNIX do.
-  map name;sn;sn;ro
-else.
-  name=. fullname name
-  c=. #mappings
-  assert c=({."1 mappings)i.<name['noun already mapped'
-  4!:55 ::] <name
-  'bad noun name'assert ('_'={:name)*._1=nc<name
-  fh=. _1
-  fn=. ''
-  mh=. OpenFileMappingR (ro{FILE_MAP_WRITE,FILE_MAP_READ);0;uucp sn,{.a. NB. copy
-  if. mh=0 do. assert 0[CloseHandleR fh['bad mapping' end.
-  fad=. MapViewOfFileR mh;(ro{FILE_MAP_WRITE,FILE_MAP_READ);0;0;0 NB. copy
-  if. fad=0 do. assert 0[CloseHandleR mh[CloseHandleR fh['bad view' end.
-  had=. fad
-  hs=: 0
-  ts=. gethadmsize had
-  mappings=: mappings,name;fn;sn;fh;mh;fad;had;ts
-  (name)=: symset had  NB. set name to address header
-  i.0 0
-end.
+map name;sn;sn;ro
 )

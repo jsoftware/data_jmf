@@ -305,6 +305,7 @@ if. IFUNIX do.
   fad=. >0{ c_mmap (<0);ts;FMP;FMM;fh;0
   if. fad e. 0 _1 do. 'bad view' assert 0[free fh,mh,0 end.
 else.
+  'Win sharename must not have /' assert '/'e.sn
   'fa ma va'=. ro{mtflags
 
 
@@ -341,7 +342,7 @@ sn=. '/' (('\'=sn)#i.#sn)} sn
 name=. fullname name
 c=. #mappings
 
-'maptype must be 0 (normal), 1 (readonly), or 2 (COW - copy on write)' assert ro e. 0 1 2
+'maptype must be 0 (MTRW), 1 (MTRO), or 2 (MTCW - copy on write)' assert ro e. 0 1 2
 'name already mapped'assert c=({."1 mappings)i.<name
 'filename already mapped'assert c=(1{"1 mappings)i.<fn
 'sharename already mapped'assert (''-:sn)+.c=(2{"1 mappings)i.<sn
@@ -405,32 +406,9 @@ end.
 ((>MAPFSIZE{m)-HS_jmf_*jmf) memw had,HADM,1,JINT
 i.0 0
 )
-
-NB.! should use mapsub
 share=: 3 : 0
 'name sn ro'=. 3{.y,<0
-sn=. '/' (('\'=sn)#i.#sn)} sn
-if. IFUNIX do.
-  map name;sn;sn;ro
-else.
-  name=. fullname name
-  c=. #mappings
-  assert c=({."1 mappings)i.<name['noun already mapped'
-  4!:55 ::] <name
-  'bad noun name'assert ('_'={:name)*._1=nc<name
-  fh=. _1
-  fn=. ''
-  mh=. OpenFileMappingR (ro{FILE_MAP_WRITE,FILE_MAP_READ);0;uucp sn,{.a.
-  if. mh=0 do. assert 0[CloseHandleR fh['bad mapping' end.
-  fad=. MapViewOfFileR mh;(ro{FILE_MAP_WRITE,FILE_MAP_READ);0;0;0
-  if. fad=0 do. assert 0[CloseHandleR mh[CloseHandleR fh['bad view' end.
-  had=. fad
-  hs=: 0
-  ts=. gethadmsize had
-  mappings=: mappings,name;fn;sn;fh;mh;fad;had;ts
-  (name)=: symset had
-  i.0 0
-end.
+map name;sn;sn;ro
 )
 unmap=: 3 : 0
 0 unmap y
