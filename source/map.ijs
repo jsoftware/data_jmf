@@ -19,7 +19,7 @@ else.
 
   NB. open can fail because of interference from other tasks (e.g., indexing)
   fh=. CreateFileR (uucp fn,{.a.);fa;(OR FILE_SHARE_WRITE, FILE_SHARE_READ);NULLPTR;OPEN_EXISTING;0;0
-  if. hf=_1 do. NB. open can fail because of interference from other tasks (e.g., indexing)
+  if. fh=_1 do. NB. open can fail because of interference from other tasks (e.g., indexing)
    6!:3[2
    fh=. CreateFileR (uucp fn,{.a.);fa;(OR FILE_SHARE_WRITE, FILE_SHARE_READ);NULLPTR;OPEN_EXISTING;0;0
    'bad file name/access'assert fh~:_1

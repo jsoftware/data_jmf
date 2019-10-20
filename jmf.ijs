@@ -310,7 +310,7 @@ else.
 
 
   fh=. CreateFileR (uucp fn,{.a.);fa;(OR FILE_SHARE_WRITE, FILE_SHARE_READ);NULLPTR;OPEN_EXISTING;0;0
-  if. hf=_1 do.
+  if. fh=_1 do.
    6!:3[2
    fh=. CreateFileR (uucp fn,{.a.);fa;(OR FILE_SHARE_WRITE, FILE_SHARE_READ);NULLPTR;OPEN_EXISTING;0;0
    'bad file name/access'assert fh~:_1
