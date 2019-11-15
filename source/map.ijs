@@ -101,6 +101,7 @@ mappings=: mappings,m
 i.0 0
 )
 
+NB. intended for use in mtm where RO tasks must handle jmf file resize in RW task
 NB. remap noun to get new filesize (resized in another task)
 NB. Jd MTRO task gets new filesize set in MTRW task
 NB. header not freed/allocated/changed - except to point at new address for data
@@ -108,11 +109,12 @@ NB. filesize option this could be used in Jd instead of unmap/map
 remap=: 3 : 0
 name=. fullname y
 row=. ({."1 mappings)i.<name
-'not mapped' assert row<#mappings
+'remap: not mapped' assert row<#mappings
 m=. row{mappings
 fn=. ;1{m
-jmf=. >MAPJMF{m  NB. jmf
 ro=.  >MAPMT{m  NB. mt - maptype - 0/ro/cow
+jmf=. >MAPJMF{m
+hs=. HS*jmf
 
 NB. unmap so map can be done
 'sn fh mh fad had'=. 5{.2}.m
@@ -122,12 +124,10 @@ NB. map to get new size
 m=. mapsub name;fn;sn;ro
 m=. (had;jmf) (MAPHEADER,MAPJMF)}m
 mappings=: m row}mappings
-if. -.jmf do.
- fad=. >MAPADDRESS{m
- d=. sfu HS+-/ufs fad,had
- d memw had,0,1,JINT NB. header updated to point at possibly new data
-end.
-((>MAPFSIZE{m)-HS_jmf_*jmf) memw had,HADM,1,JINT NB. new header msize
+fad=. >MAPADDRESS{m
+d=. sfu hs+-/ufs fad,had
+d memw had,HADK,1,JINT NB. header updated to point at data
+((>MAPFSIZE{m)-hs) memw had,HADM,1,JINT NB. header updated with new msize
 i.0 0
 )
 

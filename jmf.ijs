@@ -388,22 +388,21 @@ i.0 0
 remap=: 3 : 0
 name=. fullname y
 row=. ({."1 mappings)i.<name
-'not mapped' assert row<#mappings
+'remap: not mapped' assert row<#mappings
 m=. row{mappings
 fn=. ;1{m
-jmf=. >MAPJMF{m
 ro=.  >MAPMT{m
+jmf=. >MAPJMF{m
+hs=. HS*jmf
 'sn fh mh fad had'=. 5{.2}.m
 free fh,mh,fad
 m=. mapsub name;fn;sn;ro
 m=. (had;jmf) (MAPHEADER,MAPJMF)}m
 mappings=: m row}mappings
-if. -.jmf do.
- fad=. >MAPADDRESS{m
- d=. sfu HS+-/ufs fad,had
- d memw had,0,1,JINT
-end.
-((>MAPFSIZE{m)-HS_jmf_*jmf) memw had,HADM,1,JINT
+fad=. >MAPADDRESS{m
+d=. sfu hs+-/ufs fad,had
+d memw had,HADK,1,JINT
+((>MAPFSIZE{m)-hs) memw had,HADM,1,JINT
 i.0 0
 )
 share=: 3 : 0

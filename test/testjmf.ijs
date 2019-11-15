@@ -105,6 +105,8 @@ m=. mappings
 remap_jmf_'abc'
 assert m-:mappings
 unmap_jmf_'abc'
+echo 'testmaptype end'
+i.0 0
 )
 
 testmaptype''
