@@ -351,7 +351,7 @@ c=. #mappings
 aa=. AFNJA+AFRO*ro=1
 
 m=. mapsub name;fn;sn;ro
-'fad had ts'=. (MAPADDRESS,MAPHEADER,MAPFSIZE){m
+'fh mh fad had ts'=. (MAPFH,MAPMH,MAPADDRESS,MAPHEADER,MAPFSIZE){m
 
 if. ro*.0=type do.
   had=. allochdr 127

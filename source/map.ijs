@@ -64,7 +64,7 @@ c=. #mappings
 aa=. AFNJA+AFRO*ro=1       NB. readwrite/readonly array access
 
 m=. mapsub name;fn;sn;ro
-'fad had ts'=. (MAPADDRESS,MAPHEADER,MAPFSIZE){m
+'fh mh fad had ts'=. (MAPFH,MAPMH,MAPADDRESS,MAPHEADER,MAPFSIZE){m
 
 if. ro*.0=type do. NB. readonly jmf file
   had=. allochdr 127
