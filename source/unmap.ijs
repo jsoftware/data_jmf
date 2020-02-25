@@ -18,11 +18,12 @@ row=. ({."1 mappings)i.n NB. row in mappings
 if. row=#mappings do. 1 return. end.  NB. not mapped
 m=. row{mappings
 4!:55 ::] n NB. erase name
-'sn fh mh fad had'=. 5{.2}.m
+NB. 'sn fh mh fad had'=. 5{.2}.m
+'sn fh mh fad had jmf'=. (MAPSN,MAPFH,MAPMH,MAPADDRESS,MAPHEADER,MAPJMF){m
 
 if. *./(-.x),(0=#sn),1~:getHADC had do. 2 return. end.
 
-jmf=. fad = had  NB. if jmf (self-describing)
+NB. jmf=. fad = had  NB. if jmf (self-describing)
 if. -.jmf do. freehdr had end.
 if. _1=newsize do.
   free fh,mh,fad

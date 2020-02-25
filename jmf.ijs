@@ -418,11 +418,9 @@ row=. ({."1 mappings)i.n
 if. row=#mappings do. 1 return. end.
 m=. row{mappings
 4!:55 ::] n
-'sn fh mh fad had'=. 5{.2}.m
+'sn fh mh fad had jmf'=. (MAPSN,MAPFH,MAPMH,MAPADDRESS,MAPHEADER,MAPJMF){m
 
 if. *./(-.x),(0=#sn),1~:getHADC had do. 2 return. end.
-
-jmf=. fad = had
 if. -.jmf do. freehdr had end.
 if. _1=newsize do.
   free fh,mh,fad
