@@ -85,6 +85,7 @@ if. IFUNIX do.
   c_read=: 'read x i * x' api
   c_write=: 'write x i * x' api
   c_lseek=: 'lseek x i x i' api
+  c_ftruncate=: 'ftruncate i i x' api
   c_mmap=: 'mmap * * x i i i x' api
   c_munmap=: 'munmap i * x' api
   NB.           c_open    c_mmap-prot  c_mmap-map

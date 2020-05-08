@@ -103,6 +103,7 @@ if. IFUNIX do.
   c_read=: 'read x i * x' api
   c_write=: 'write x i * x' api
   c_lseek=: 'lseek x i x i' api
+  c_ftruncate=: 'ftruncate i i x' api
   c_mmap=: 'mmap * * x i i i x' api
   c_munmap=: 'munmap i * x' api
 
@@ -429,8 +430,7 @@ else.
   totsize=. newsize + jmf*HS
   free _1,mh,fad
   if. IFUNIX do.
-    c_lseek fh;(<:totsize);SEEK_SET
-    c_write fh;(,0{a.);0+1
+    c_ftruncate fh;totsize
     if. jmf do.
       c_lseek fh;(SZI*2);SEEK_SET
       c_write fh;(,newsize);SZI

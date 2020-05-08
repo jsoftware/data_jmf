@@ -32,8 +32,9 @@ else.
   totsize=. newsize + jmf*HS
   free _1,mh,fad
   if. IFUNIX do.
-    c_lseek fh;(<:totsize);SEEK_SET
-    c_write fh;(,0{a.);0+1 NB. place a single byte at the end
+NB.     c_lseek fh;(<:totsize);SEEK_SET
+NB.     c_write fh;(,0{a.);0+1 NB. place a single byte at the end
+    c_ftruncate fh;totsize
     if. jmf do.
       c_lseek fh;(SZI*2);SEEK_SET
       c_write fh;(,newsize);SZI
