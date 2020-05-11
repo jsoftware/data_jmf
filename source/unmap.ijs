@@ -19,7 +19,7 @@ if. row=#mappings do. 1 return. end.  NB. not mapped
 m=. row{mappings
 4!:55 ::] n NB. erase name
 NB. 'sn fh mh fad had'=. 5{.2}.m
-'sn fh mh fad had jmf'=. (MAPSN,MAPFH,MAPMH,MAPADDRESS,MAPHEADER,MAPJMF){m
+'sn fh mh fad had jmf ts'=. (MAPSN,MAPFH,MAPMH,MAPADDRESS,MAPHEADER,MAPJMF,,MAPFSIZE){m
 
 if. *./(-.x),(0=#sn),1~:getHADC had do. 2 return. end.
 
@@ -32,9 +32,12 @@ else.
   totsize=. newsize + jmf*HS
   free _1,mh,fad
   if. IFUNIX do.
-NB.     c_lseek fh;(<:totsize);SEEK_SET
-NB.     c_write fh;(,0{a.);0+1 NB. place a single byte at the end
-    c_ftruncate fh;totsize
+    if. totsize>ts do.
+      c_lseek fh;(<:totsize);SEEK_SET
+      c_write fh;(,0{a.);0+1 NB. place a single byte at the end
+    elseif. totsize<ts do.
+      c_ftruncate fh;totsize
+    end.
     if. jmf do.
       c_lseek fh;(SZI*2);SEEK_SET
       c_write fh;(,newsize);SZI

@@ -135,7 +135,7 @@ else.
 end.
 
 if. _1 = 4!:0<'mappings' do.
-  mappings=: i.0 8
+  mappings=: i.0 10
 end.
 empty''
 )
