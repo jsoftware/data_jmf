@@ -81,6 +81,7 @@ if. IFUNIX do.
   lib=. ' ',~ unxlib 'c'
   api=. 1 : ('(''',lib,''',m) & cd')
   c_open=: 'open i *c i i' api
+  c_open_va=: 'open i *c i x x x x x x i' api
   c_close=: 'close i i' api
   c_read=: 'read x i * x' api
   c_write=: 'write x i * x' api
