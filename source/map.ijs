@@ -8,7 +8,12 @@ ts=. 1!:4 <fn NB. race here - get and map - OK to lose if file grows
 if. IFUNIX do.
   'Unix sharename must be same as filename' assert (sn-:'')+.sn-:fn
   'FO FMP FMM'=. ro{mtflags NB. open flags, map prot flags, map map flags
+  if. ('Darwin'-:UNAME) *. 'arm64'-:9!:56'cpu' do.
+NB. apple m1/ios variadic parameters always passing on stack
+  fh=. >0 { c_open_va fn;FO;(6#<00),<0
+  else.
   fh=. >0 { c_open fn;FO;0
+  end.
   'bad file name/access' assert fh~:_1
   mh=. ts NB.  unix doesn't use a mapping handle - use to hold fsize for unmap
   fad=. >0{ c_mmap (<0);ts;FMP;FMM;fh;0

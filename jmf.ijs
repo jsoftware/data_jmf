@@ -305,7 +305,11 @@ ts=. 1!:4 <fn
 if. IFUNIX do.
   'Unix sharename must be same as filename' assert (sn-:'')+.sn-:fn
   'FO FMP FMM'=. ro{mtflags
+  if. ('Darwin'-:UNAME) *. 'arm64'-:9!:56'cpu' do.
+  fh=. >0 { c_open_va fn;FO;(6#<00),<0
+  else.
   fh=. >0 { c_open fn;FO;0
+  end.
   'bad file name/access' assert fh~:_1
   mh=. ts
   fad=. >0{ c_mmap (<0);ts;FMP;FMM;fh;0
