@@ -258,7 +258,7 @@ fn=. jpath fn
 msize=. <. msize
 ts=. HS+msize
 if. IFUNIX do.
-  if. ('Darwin'-:UNAME) *. 'arm64'-:9!:56'cpu' do.
+  if. ('Darwin'-:UNAME) *. 'arm64'-:3 :'try.9!:56''cpu''catch.''''end.' '' do.
   fh=. 0 pick c_open_va fn; (OR O_RDWR, O_CREAT, O_TRUNC); (6#<00) ,< 8b666
   else.
   fh=. 0 pick c_open fn; (OR O_RDWR, O_CREAT, O_TRUNC); 8b666
@@ -305,7 +305,7 @@ ts=. 1!:4 <fn
 if. IFUNIX do.
   'Unix sharename must be same as filename' assert (sn-:'')+.sn-:fn
   'FO FMP FMM'=. ro{mtflags
-  if. ('Darwin'-:UNAME) *. 'arm64'-:9!:56'cpu' do.
+  if. ('Darwin'-:UNAME) *. 'arm64'-:3 :'try.9!:56''cpu''catch.''''end.' '' do.
   fh=. >0 { c_open_va fn;FO;(6#<00),<0
   else.
   fh=. >0 { c_open fn;FO;0

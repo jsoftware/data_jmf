@@ -9,7 +9,7 @@ fn=. jpath fn
 msize=. <. msize
 ts=. HS+msize     NB. total file size
 if. IFUNIX do.
-  if. ('Darwin'-:UNAME) *. 'arm64'-:9!:56'cpu' do.
+  if. ('Darwin'-:UNAME) *. 'arm64'-:3 :'try.9!:56''cpu''catch.''''end.' '' do.
 NB. apple m1/ios variadic parameters always passing on stack
   fh=. 0 pick c_open_va fn; (OR O_RDWR, O_CREAT, O_TRUNC); (6#<00) ,< 8b666
   else.

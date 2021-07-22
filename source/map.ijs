@@ -8,7 +8,7 @@ ts=. 1!:4 <fn NB. race here - get and map - OK to lose if file grows
 if. IFUNIX do.
   'Unix sharename must be same as filename' assert (sn-:'')+.sn-:fn
   'FO FMP FMM'=. ro{mtflags NB. open flags, map prot flags, map map flags
-  if. ('Darwin'-:UNAME) *. 'arm64'-:9!:56'cpu' do.
+  if. ('Darwin'-:UNAME) *. 'arm64'-:3 :'try.9!:56''cpu''catch.''''end.' '' do.
 NB. apple m1/ios variadic parameters always passing on stack
   fh=. >0 { c_open_va fn;FO;(6#<00),<0
   else.
