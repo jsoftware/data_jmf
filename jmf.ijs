@@ -364,7 +364,7 @@ m=. mapsub name;fn;sn;ro
 'fh mh fad had ts'=. (MAPFH,MAPMH,MAPADDRESS,MAPHEADER,MAPFSIZE){m
 
 if. ro*.0=type do.
-  had=. allochdr 127
+  had=. allochdr 63
   d=. memr fad,0,HSN,JINT
   d=. (sfu HS+-/ufs fad,had),aa,2}.d
   d=. 1 HADCN} d
@@ -380,7 +380,7 @@ elseif. 0=type do.
   end.
   (,t+1) setHADC had
 elseif. 1 do.
-  had=. allochdr 127
+  had=. allochdr 63
   'JBOXED (non-jmf) not supported' assert JBOXED~:type
   bx=. JBOXED=type
   hs=. +/hsize [ asize=. JSIZES {~ JTYPES i. type
