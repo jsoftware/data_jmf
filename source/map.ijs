@@ -72,7 +72,7 @@ m=. mapsub name;fn;sn;ro
 'fh mh fad had ts'=. (MAPFH,MAPMH,MAPADDRESS,MAPHEADER,MAPFSIZE){m
 
 if. ro*.0=type do. NB. readonly jmf file
-  had=. allochdr 127
+  had=. allochdr 63
   d=. memr fad,0,HSN,JINT
   d=. (sfu HS+-/ufs fad,had),aa,2}.d NB. HADK HADFLAG
   d=. 1 HADCN} d
@@ -88,7 +88,7 @@ elseif. 0=type do.
   end.
   (,t+1) setHADC had    NB. ref count is 1 (except for shared, which is bumped)
 elseif. 1 do.
-  had=. allochdr 127                   NB. allocate header
+  had=. allochdr 63                    NB. allocate header
   'JBOXED (non-jmf) not supported' assert JBOXED~:type
   bx=. JBOXED=type
 NB.  hs=. (+/hsize)*asize=. JSIZES {~ JTYPES i. type
