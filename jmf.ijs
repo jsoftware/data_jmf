@@ -196,7 +196,7 @@ type =: nountype type
 rank=. #shape
 had=. gethad name
 'flag msize'=. memr had,HADFLAG,2,JINT
-'not mapped and writeable' assert 2=flag
+'not mapped and writeable' assert 2=3 (17 b.) flag NB. AFRO=0, AFNJA=1 - 904 required change
 size=. (JTYPES i.type){JSIZES
 ts=. size**/shape
 'msize too small' assert ts<:msize
