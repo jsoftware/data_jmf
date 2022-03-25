@@ -102,7 +102,7 @@ end.
 
 m=. (had;0=type) (MAPHEADER,MAPJMF)}m
 mappings=: mappings,m
-(name)=: symset had  NB. set name to address header
+(name)=: 15!:7 had  NB. symset - set name to address header
 i.0 0
 )
 

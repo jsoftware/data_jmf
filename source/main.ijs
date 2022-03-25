@@ -34,22 +34,16 @@ i.0 0
 )
 
 NB. =========================================================
-getflagsad=: 3 : 0
-SZI+1{memr (symget <fullname y),0 4,JINT
-)
-
-NB. =========================================================
 readonly=: 3 : 0
-AFRO(17 b.)memr (getflagsad y),0 1,JINT
+AFRO(17 b.) a.i.memr (HADFLAG+memhad fullname y),0 1,JCHAR
 :
-flagsad=. getflagsad y
-flags=. memr flagsad,0 1,JINT
+ad=. HADFLAG+memhad fullname y
+flags=. a.i.memr ad,0 1,JCHAR
 flags=. flags(17 b.)(26 b.)AFRO NB. off AFRO
 flags=. flags(23 b.)AFRO*0~:x
-flags memw flagsad,0 1,JINT
+(flags{a.) memw ad,0 1,JCHAR
 i. 0 0
 )
-
 
 NB. =========================================================
 NB.*showmap v show all mappings

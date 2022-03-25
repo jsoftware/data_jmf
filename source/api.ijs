@@ -1,4 +1,9 @@
 NB. jmf api
+
+NB. following will eventually be defined in stdlib
+memhad_z_=: [: {: [: memr 0 2 4 ,~ (15!:6)@< NB. header address from name (904 15!:12)
+memdad_z_=: 15!:14@< NB. data address from name
+
 0 : 0
 807 made changes to the header that affect jmf J code
 before 807 - HADR field bytes are (lilendian) rrrr (j32) rrrrrrrr (j64)
@@ -26,13 +31,6 @@ HS=: SZI*HSN       NB. jmf header size in bytes
 AFRO=: 1           NB. header flag - readonly
 AFNJA=: 2          NB. header flag - non-J allocation
 NULLPTR=: <0
-gethad=: 3 : 0
-sad=. symget <fullname y
-'bad name' assert sad
-1{memr sad,0 4,JINT
-)
-symget=: 15!:6 NB. get address of locale entry for name
-symset=: 15!:7 NB. set name to address header
 NB. must set HADC in same sentence as 15!:8 !!!
 allochdr=: 3 : 'r[2 setHADC r=.15!:8 y'
 freehdr=: 15!:9 NB. free header
@@ -41,7 +39,7 @@ fullname=: 3 : 0
 t=. y-.' '
 t,('_'~:{:t)#'_base_'
 )
-newheader=: 0~:memr (gethad'SZI_jmf_'),HADR,1,JINT
+newheader=: 0~:memr (memhad'SZI_jmf_'),HADR,1,JINT
 
 setheader=: 4 : 0
 if. newheader do.
