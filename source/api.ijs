@@ -87,10 +87,10 @@ if. IFUNIX do.
   c_ftruncate=: 'ftruncate i i x' api
   c_mmap=: 'mmap * * x i i i x' api
   c_munmap=: 'munmap i * x' api
-  NB.           c_open    c_mmap-prot  c_mmap-map
-  t=.           O_RDWR,   PROT_WRITE,  MAP_SHARED  NB. normal mapping         
-  t=. t,:       O_RDONLY, PROT_READ,   MAP_SHARED  NB. ro mapping
-  mtflags=:  t, O_RDWR,   PROT_WRITE,  MAP_PRIVATE NB. cow mapping
+  NB.           c_open    c_mmap-prot              c_mmap-map
+  t=.           O_RDWR,   (PROT_WRITE+PROT_READ),  MAP_SHARED  NB. normal mapping         
+  t=. t,:       O_RDONLY, PROT_READ,               MAP_SHARED  NB. ro mapping
+  mtflags=:  t, O_RDWR,   (PROT_WRITE+PROT_READ),  MAP_PRIVATE NB. cow mapping
 else.
   CREATE_ALWAYS=: 2
   CREATE_NEW=: 1
