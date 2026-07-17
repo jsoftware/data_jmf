@@ -6,9 +6,9 @@ DESCRIPTION=: 0 : 0
 J Memory Mapped File
 )
 
-VERSION=: '1.0.44'
+VERSION=: '1.0.45'
 
-RELEASE=: ''
+RELEASE=: 'j9.8'
 
 FOLDER=: 'data/jmf'
 
