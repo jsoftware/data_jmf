@@ -40,7 +40,7 @@ AFRO=: 1           NB. header flag - readonly
 AFNJA=: 2          NB. header flag - non-J allocation
 NULLPTR=: <0
 NB. must set HADC in same sentence as 15!:8 !!!
-allochdr=: 3 : 'r[2 setHADC r=.15!:8 y'
+allochdr=: 3 : '15!:8 y'
 freehdr=: 15!:9 NB. free header
 msize=: gethadmsize=: 3 : 'memr y,HADM,1,JINT'
 fullname=: 3 : 0
@@ -78,6 +78,7 @@ end.
 getHADC=: 3 : '  memr y,HADC,1,JINT'
 setHADC=: 4 : 'x memw y,HADC,1,JINT'
 refcount=: getHADC
+initc=:initc"_`(((15!:9 ] 01 memw ,&(HADT,1,JINT)) ] 2 {.@:= getHADC)@(15!:8))@.(_1 = 4!:0 <'initc') 0 NB. init usecount of header before assignment: 1 if pre-9.8, 0 if 9.8
 
 
 NB. =========================================================

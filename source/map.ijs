@@ -75,9 +75,9 @@ if. ro*.0=type do. NB. readonly jmf file
   had=. allochdr 63
   d=. memr fad,0,HSN,JINT
   d=. (sfu HS+-/ufs fad,had),aa,2}.d NB. HADK HADFLAG
-  d=. 1 HADCN} d
+  d=. initc HADCN} d
   d setheader had
-elseif. 0=type do.
+elseif. 0=type do.  NB. other jmf file
   had=. fad
   if. 0=validate ts,had do. 'bad jmf header' assert 0[free fh,mh,fad end.
   aa memw had,HADFLAG,1,JINT
@@ -86,8 +86,8 @@ elseif. 0=type do.
   else.
     t=. 10000+ getHADC had NB. shared ref count is bumped and is not valid
   end.
-  (,t+1) setHADC had    NB. ref count is 1 (except for shared, which is bumped)
-elseif. 1 do.
+  (,t+initc) setHADC had
+else.  NB. header is to be allocated as a J block
   had=. allochdr 63                    NB. allocate header
   'JBOXED (non-jmf) not supported' assert JBOXED~:type
   bx=. JBOXED=type
@@ -96,13 +96,15 @@ NB. hsize should be in byte not atom, data knows nothing about items
   hs=. +/hsize [ asize=. JSIZES {~ JTYPES i. type
   lshape=. bx}.<.(ts-hs)%(*/tshape)*asize
   d=. sfu hs+-/ufs fad,had
-  h=. d,aa,ts,type,1,(*/lshape,tshape),((-.bx)+#tshape),lshape,tshape
+  h=. d,aa,ts,type,initc,(*/lshape,tshape),((-.bx)+#tshape),lshape,tshape
   h setheader had  NB. set header
 end.
 
 m=. (had;0=type) (MAPHEADER,MAPJMF)}m
 mappings=: mappings,m
-(name)=: 15!:7 had  NB. symset - set name to address header
+if. -. initc do. (1{a.) memw had,(3 3 p. SZI),1,JCHAR end. NB. Install (ASGN>>24 into high byte of type as flag to indicate initial mapping
+(name)=: 15!:7 had  NB. This increments usecount to initc+1
+if. -. initc do. (0{a.) memw had,(3 3 p. SZI),1,JCHAR end. NB. Install (ASGN>>24) into high byte of type as flag to indicate initial mapping
 i.0 0
 )
 

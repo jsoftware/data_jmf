@@ -50,5 +50,5 @@ NB.*showmap v show all mappings
 showmap=: 3 : 0
 h=. 'name';'fn';'sn';'fh';'mh';'address';'header';'fsize';'jmf';'mt';'msize';'refs'
 hads=. 6{"1 mappings
-h,mappings,.(gethadmsize each hads),.refcount each hads
+h,mappings,.(gethadmsize each hads),.((1-initc) + refcount) each hads  NB. bias refcount for compatibility with original initc=1
 )
