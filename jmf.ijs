@@ -97,7 +97,7 @@ end.
 getHADC=: 3 : '  memr y,HADC,1,JINT'
 setHADC=: 4 : 'x memw y,HADC,1,JINT'
 refcount=: getHADC
-initc=:initc"_`(((15!:9 ] 01 memw ,&(HADT,1,JINT)) ] 2 {.@:= getHADC)@(15!:8))@.(_1 = 4!:0 <'initc') 0 NB. init usecount of header before assignment: 1 if pre-9.8, 0 if 9.8
+initc=:initc"_`(((15!:9 ] 01 memw ,&(HADT,1,JINT)) ] 2 {.@:= getHADC)@(15!:8))@.(_1 = 4!:0 <'initc') 0
 
 3 : 0''
 if. IFUNIX do.
@@ -298,7 +298,7 @@ i. 0 0
 showmap=: 3 : 0
 h=. 'name';'fn';'sn';'fh';'mh';'address';'header';'fsize';'jmf';'mt';'msize';'refs'
 hads=. 6{"1 mappings
-h,mappings,.(gethadmsize each hads),.((1-initc) + refcount) each hads  NB. bias refcount for compatibillity with original initc=1
+h,mappings,.(gethadmsize each hads),.((1-initc) + refcount) each hads
 )
 mapsub=: 3 : 0
 'name fn sn ro'=. y
@@ -364,13 +364,13 @@ aa=. AFNJA+AFRO*ro=1
 m=. mapsub name;fn;sn;ro
 'fh mh fad had ts'=. (MAPFH,MAPMH,MAPADDRESS,MAPHEADER,MAPFSIZE){m
 
-if. ro*.0=type do.  NB. File is read-only with header; must copy the header into JE hdr
+if. ro*.0=type do.
   had=. allochdr 63
   d=. memr fad,0,HSN,JINT
   d=. (sfu HS+-/ufs fad,had),aa,2}.d
   d=. initc HADCN} d
   d setheader had
-elseif. 0=type do.  NB. header is in file; count should be initc
+elseif. 0=type do.
   had=. fad
   if. 0=validate ts,had do. 'bad jmf header' assert 0[free fh,mh,fad end.
   aa memw had,HADFLAG,1,JINT
@@ -380,7 +380,7 @@ elseif. 0=type do.  NB. header is in file; count should be initc
     t=. 10000+ getHADC had
   end.
   (,t+initc) setHADC had
-else.  NB. header is to be allocated as a J block
+else.
   had=. allochdr 63
   'JBOXED (non-jmf) not supported' assert JBOXED~:type
   bx=. JBOXED=type
@@ -393,9 +393,9 @@ end.
 
 m=. (had;0=type) (MAPHEADER,MAPJMF)}m
 mappings=: mappings,m
-if. -. initc do. (1{a.) memw had,(3 3 p. SZI),1,JCHAR end. NB. Install (ASGN>>24 into high byte of type as flag to indicate initial mapping
-(name)=: 15!:7 had  NB. This increments usecount to initc+1
-if. -. initc do. (0{a.) memw had,(3 3 p. SZI),1,JCHAR end. NB. Install (ASGN>>24) into high byte of type as flag to indicate initial mapping
+if. -. initc do. (1{a.) memw had,(3 3 p. SZI),1,JCHAR end.
+(name)=: 15!:7 had
+if. -. initc do. (0{a.) memw had,(3 3 p. SZI),1,JCHAR end.
 i.0 0
 )
 remap=: 3 : 0
@@ -428,23 +428,23 @@ unmap=: 3 : 0
 'y newsize'=. 2{.(boxopen y),<_1
 n=. <fullname y
 row=. ({."1 mappings)i.n
-if. row=#mappings do. 1 return. end.  NB. name not mapped
+if. row=#mappings do. 1 return. end.
 m=. row{mappings
 'sn fh mh fad had jmf ts'=. (MAPSN,MAPFH,MAPMH,MAPADDRESS,MAPHEADER,MAPJMF,,MAPFSIZE){m
-ac =. getHADC had  NB. save initial count
-if. *./(-.x),(0=#sn),(initc+1)~:ac do. 2 return. end.  NB. if freeing the mapname won't free the header, reject the request
-(2 (20 b.) memr had,HADFLAG,1,JINT) memw had,HADFLAG,1,JINT  NB. clear NJA
-if. jmf do.  NB. non-allocated header...
- (>:ac) setHADC had  NB. incr usecount to ensure no free
- if. initc do. 4!:55 ::] n else. (271828) 4!:55 ::] n end.   NB. delete the name, but never the value
- (<:ac) setHADC had  NB. restore original usecount-1 (0 in 9.8)
-else.  NB. Normal allocated header...
- if. initc do. 4!:55 ::] n else. (271828) 4!:55 ::] n end.   NB. free the name.  In 9.8 this will also free the value
- if. initc do. freehdr had end.  NB. Before 9.8, free the header one last time
+ac =. getHADC had
+if. *./(-.x),(0=#sn),(initc+1)~:ac do. 2 return. end.
+(2 (20 b.) memr had,HADFLAG,1,JINT) memw had,HADFLAG,1,JINT
+if. jmf do.
+ (>:ac) setHADC had
+ if. initc do. 4!:55 ::] n else. (271828) 4!:55 ::] n end.
+ (<:ac) setHADC had
+else.
+ if. initc do. 4!:55 ::] n else. (271828) 4!:55 ::] n end.
+ if. initc do. freehdr had end.
 end.
-if. _1=newsize do.   NB. Not resizing, just free the mapped data
+if. _1=newsize do.
   free fh,mh,fad
-else.   NB. resizing, adjust the allocation
+else.
   newsize=. <.newsize
   totsize=. newsize + jmf*HS
   free _1,mh,fad
