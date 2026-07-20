@@ -20,7 +20,7 @@ m=. row{mappings
 NB. 'sn fh mh fad had'=. 5{.2}.m
 'sn fh mh fad had jmf ts'=. (MAPSN,MAPFH,MAPMH,MAPADDRESS,MAPHEADER,MAPJMF,,MAPFSIZE){m
 ac =. getHADC had  NB. save initial count
-if. *./(-.x),(0=#sn),(initc+1)~:ac do. 2 return. end.  NB. if freeing the mapname won't free the header, reject the request
+if. *./(-.x),(0=#sn),(initc+1)<ac do. 2 return. end.  NB. if freeing the mapname won't free the header, reject the request
 (2 (20 b.) memr had,HADFLAG,1,JINT) memw had,HADFLAG,1,JINT  NB. clear NJA
 if. jmf do.  NB. non-allocated header...
  (>:ac) setHADC had  NB. incr usecount to ensure no free
