@@ -71,6 +71,13 @@ aa=. AFNJA+AFRO*ro=1       NB. readwrite/readonly array access
 m=. mapsub name;fn;sn;ro
 'fh mh fad had ts'=. (MAPFH,MAPMH,MAPADDRESS,MAPHEADER,MAPFSIZE){m
 
+NB. File data has been mapped, not handle the J noun header.  If jmf=1 this is at the start of the user's file, otherwise we have to allocate
+NB. a header and point it to the data.
+NB. Before 9.8 the usecount of the header started at 2 so that it would not be deleted before it could be assigned (the name had here is the A block for an atomic INT that points to the actual header).
+NB. This meant that aliasing was detected differently between normal and NJA blocks, which was ugly.
+NB. Starting in 9.8 the header starts out with usecount 0 (zapped).  [(initc) is 1 for pre-9.8, 0 for 9.8].  The initial assignment to the mapname raises the usecount to 1, and the block is freed when its usecount goes to 0
+NB. as the mapname is deleted.  To avoid getting the mapping and the usecount out of sync, the mapname is flagged as such and requests to delete the mapname are rejected if they don't come from our (unmap)
+NB. verb.  Any attempt to unmap the file when there is an alias outstanding to the data is rejected.
 if. ro*.0=type do. NB. readonly jmf file
   had=. allochdr 63
   d=. memr fad,0,HSN,JINT
@@ -102,9 +109,9 @@ end.
 
 m=. (had;0=type) (MAPHEADER,MAPJMF)}m
 mappings=: mappings,m
-if. -. initc do. (1{a.) memw had,(3 3 p. SZI),1,JCHAR end. NB. Install (ASGN>>24 into high byte of type as flag to indicate initial mapping
+if. -. initc do. (1{a.) memw had,(3 3 p. SZI),1,JCHAR end. NB. Install (ASGN>>24) into high byte of type as flag to indicate initial mapping
 (name)=: 15!:7 had  NB. This increments usecount to initc+1
-if. -. initc do. (0{a.) memw had,(3 3 p. SZI),1,JCHAR end. NB. Install (ASGN>>24) into high byte of type as flag to indicate initial mapping
+if. -. initc do. (0{a.) memw had,(3 3 p. SZI),1,JCHAR end. NB. Remove (ASGN>>24) flag
 i.0 0
 )
 
