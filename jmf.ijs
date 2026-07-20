@@ -432,7 +432,7 @@ if. row=#mappings do. 1 return. end.
 m=. row{mappings
 'sn fh mh fad had jmf ts'=. (MAPSN,MAPFH,MAPMH,MAPADDRESS,MAPHEADER,MAPJMF,,MAPFSIZE){m
 ac =. getHADC had
-if. *./(-.x),(0=#sn),(initc+1)~:ac do. 2 return. end.
+if. *./(-.x),(0=#sn),(initc+1)<ac do. 2 return. end.
 (2 (20 b.) memr had,HADFLAG,1,JINT) memw had,HADFLAG,1,JINT
 if. jmf do.
  (>:ac) setHADC had
