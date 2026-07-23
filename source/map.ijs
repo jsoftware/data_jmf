@@ -109,9 +109,8 @@ end.
 
 m=. (had;0=type) (MAPHEADER,MAPJMF)}m
 mappings=: mappings,m
-if. -. initc do. (1{a.) memw had,(3 3 p. SZI),1,JCHAR end. NB. Install (ASGN>>24) into high byte of type as flag to indicate initial mapping
-(name)=: 15!:7 had  NB. This increments usecount to initc+1
-if. -. initc do. (0{a.) memw had,(3 3 p. SZI),1,JCHAR end. NB. Remove (ASGN>>24) flag
+(name)=: 15!:7 had   NB. Install the mapped value into the name
+if. -. initc do. (name) =: $: end.  NB. special trigger assignment to mark the mapped name as protected.  $: (self) is invalid otherwise; this way we add 0 instructions to the non-NJA line
 i.0 0
 )
 
