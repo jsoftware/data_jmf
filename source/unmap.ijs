@@ -21,14 +21,15 @@ NB. 'sn fh mh fad had'=. 5{.2}.m
 'sn fh mh fad had jmf ts'=. (MAPSN,MAPFH,MAPMH,MAPADDRESS,MAPHEADER,MAPJMF,,MAPFSIZE){m
 ac =. getHADC had  NB. save initial count
 if. *./(-.x),(0=#sn),(initc+1)<ac do. 2 return. end.  NB. if freeing the mapname won't free the header, reject the request
-(2 (20 b.) memr had,HADFLAG,1,JINT) memw had,HADFLAG,1,JINT  NB. clear NJA
+if. -. initc do. (n) =: $: end.   NB. Remove protection from the mapped name
+(2 (20 b.) memr had,HADFLAG,1,JINT) memw had,HADFLAG,1,JINT  NB. Mark the header not mapped, to make sure it frees
 if. jmf do.  NB. non-allocated header...
- (>:ac) setHADC had  NB. incr usecount to ensure no free
- if. initc do. 4!:55 ::] n else. (271828) 4!:55 ::] n end.   NB. delete the name, but never the value
- (<:ac) setHADC had  NB. restore original usecount-1 (0 in 9.8)
+ (>:ac) setHADC had  NB. incr usecount to ensure no free of the value
+ 4!:55 ::] n   NB. Free the name, but never the value
+ (<:ac) setHADC had   NB. Correct usecount of value
 else.  NB. Normal allocated header...
- if. initc do. 4!:55 ::] n else. (271828) 4!:55 ::] n end.   NB. free the name.  In 9.8 this will also free the value
- if. initc do. freehdr had end.  NB. Before 9.8, free the header one last time
+ 4!:55 ::] n   NB. free the name.  In 9.8 this will also free the value
+ if. initc do. freehdr had end.    NB. Before 9.8, free the header one last time
 end.
 if. _1=newsize do.   NB. Not resizing, just free the mapped data
   free fh,mh,fad

@@ -6,7 +6,7 @@ DESCRIPTION=: 0 : 0
 J Memory Mapped File
 )
 
-VERSION=: '1.0.50'
+VERSION=: '1.0.51'
 
 RELEASE=: 'j9.8'
 
