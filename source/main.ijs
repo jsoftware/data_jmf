@@ -1,6 +1,28 @@
 NB. jmf - main definitions except map,unmap
 
 NB. =========================================================
+NB.*additem v add item to mapped noun
+NB.
+NB. no longer necessary, but retained for compatibility
+additem=: 3 : 0
+had=. memhad fullname y
+'flag msize type rank'=. (<.SZI%~HADFLAG,HADM,HADT,HADR){memr had,0,NORMAH,JINT
+type=. nountype type
+'not mapped and writeable' assert 2=flag
+'scalar' assert 0~:rank
+'not supported for boxed data' assert 32~:type
+shape=. memr had,HADS,rank,JINT
+shape=. shape+1,0#~rank-1
+size=. (JTYPES i.type){JSIZES
+ts=. size**/shape
+'msize too small' assert ts<:msize
+(*/shape) memw had,HADN,1,JINT
+shape memw had,HADS,rank,JINT
+rank setHADR had
+i.0 0
+)
+
+NB. =========================================================
 NB.*createjmf v create mapped file
 NB. createjmf fn;msize
 createjmf=: 3 : 0
@@ -11,14 +33,15 @@ ts=. HS+msize     NB. total file size
 if. IFUNIX do.
   if. ('Darwin'-:UNAME) *. 'arm64'-:3 :'try.9!:56''cpu''catch.''''end.' '' do.
 NB. apple m1/ios variadic parameters always passing on stack
-  fh=. 0 pick c_open_va fn; (OR O_RDWR, O_CREAT, O_TRUNC); (6#<00) ,< 8b666
+    fh=. 0 pick c_open_va fn; (OR O_RDWR, O_CREAT, O_TRUNC); (6#<00) ,< 8b666
   else.
-  fh=. 0 pick c_open fn; (OR O_RDWR, O_CREAT, O_TRUNC); 8b666
+    fh=. 0 pick c_open fn; (OR O_RDWR, O_CREAT, O_TRUNC); 8b666
   end.
   c_lseek fh;(<:ts);SEEK_SET
   c_write fh; (,0{a.); 0+1   NB. place a single byte at the end
   c_lseek fh;0 ;SEEK_SET
   d=. HS,AFNJA,msize,JINT,0,0,1,0 NB. integer empty list
+  d=. d (SZI<.@%~HADK,HADFLAG,HADM,HADT,HADC,HADN,HADR,HADS)}HAD,0
   c_write fh;d;(SZI*#d)
   c_close fh
 else.
@@ -27,6 +50,7 @@ else.
   SetEndOfFile fh
   SetFilePointerR fh;0;NULLPTR;FILE_BEGIN
   d=. HS,AFNJA,msize,JINT,0,0,1,0 NB. integer empty list
+  d=. d (SZI<.@%~HADK,HADFLAG,HADM,HADT,HADC,HADN,HADR,HADS)}HAD,0
   WriteFile fh;d;(SZI*#d);(,0);<NULLPTR
   CloseHandleR fh
 end.

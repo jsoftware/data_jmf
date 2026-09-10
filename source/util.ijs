@@ -1,7 +1,7 @@
 NB. jmf util
 
 NB. =========================================================
-nountype =: 17 b.&16b1fffff  NB. just the noun-type part of y, removing upper flag bits
+nountype=: 17 b.&16b1fffff  NB. just the noun-type part of y, removing upper flag bits
 
 NB. =========================================================
 NB. unsigned (x:) from signed (J integer)
@@ -53,10 +53,11 @@ NB. =========================================================
 NB. set shape of mapped noun
 settypeshape=: 3 : 0
 'name type shape'=: y
-type =: nountype type
+type=: nountype type
 rank=. #shape
 had=. memhad name
-'flag msize'=. memr had,HADFLAG,2,JINT
+flag=. {. memr had,HADFLAG,1,JINT
+msize=. {. memr had,HADM,1,JINT
 'not mapped and writeable' assert 2=3 (17 b.) flag NB. AFRO=0, AFNJA=1 - 904 required change
 size=. (JTYPES i.type){JSIZES
 ts=. size**/shape
@@ -73,7 +74,8 @@ NB. 1 if jmf header is: big enough, offset=HS, msize=ts-HS, valid JTYPE
 validate=: 3 : 0
 'ts had'=. y
 if. ts>:HS do.
-  d=. memr had,0 4,JINT
-  *./((HS,ts-HS)=0 2{d),1 2 4 8 16 32 131072 262144 65536 e.~ nountype 3{d
+  d=. memr had,0,NORMAH,JINT
+  'dk dm dt'=. (SZI<.@%~HADK,HADM,HADT){d
+  *./((HS,ts-HS)=dk,dm),1 2 4 8 16 32 131072 262144 65536 e.~ nountype dt
 else. 0 end.
 )

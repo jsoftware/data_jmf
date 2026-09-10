@@ -10,9 +10,9 @@ if. IFUNIX do.
   'FO FMP FMM'=. ro{mtflags NB. open flags, map prot flags, map map flags
   if. ('Darwin'-:UNAME) *. 'arm64'-:3 :'try.9!:56''cpu''catch.''''end.' '' do.
 NB. apple m1/ios variadic parameters always passing on stack
-  fh=. >0 { c_open_va fn;FO;(6#<00),<0
+    fh=. >0 { c_open_va fn;FO;(6#<00),<0
   else.
-  fh=. >0 { c_open fn;FO;0
+    fh=. >0 { c_open fn;FO;0
   end.
   'bad file name/access' assert fh~:_1
   mh=. ts NB.  unix doesn't use a mapping handle - use to hold fsize for unmap
@@ -21,15 +21,15 @@ NB. apple m1/ios variadic parameters always passing on stack
 else.
   'Win sharename must not have /' assert -.'/'e.sn
   'fa ma va'=. ro{mtflags NB. open/map/view flags
-  NB. concurrent RO and RW require FILE_SHARE_WRITE+FILE_SHARE_READ for both
+NB. concurrent RO and RW require FILE_SHARE_WRITE+FILE_SHARE_READ for both
 
-  NB. open can fail because of interference from other tasks (e.g., indexing)
+NB. open can fail because of interference from other tasks (e.g., indexing)
   fh=. CreateFileR (uucp fn,{.a.);fa;(OR FILE_SHARE_WRITE, FILE_SHARE_READ);NULLPTR;OPEN_EXISTING;0;0
   if. fh=_1 do. NB. open can fail because of interference from other tasks (e.g., indexing)
-   6!:3[2
-   fh=. CreateFileR (uucp fn,{.a.);fa;(OR FILE_SHARE_WRITE, FILE_SHARE_READ);NULLPTR;OPEN_EXISTING;0;0
-   'bad file name/access'assert fh~:_1
-  end. 
+    6!:3[2
+    fh=. CreateFileR (uucp fn,{.a.);fa;(OR FILE_SHARE_WRITE, FILE_SHARE_READ);NULLPTR;OPEN_EXISTING;0;0
+    'bad file name/access'assert fh~:_1
+  end.
   mh=: CreateFileMappingR fh;NULLPTR;ma;0;0;(0=#sn){(uucp sn,{.a.);<NULLPTR
   if. mh=0 do. 'bad mapping'assert 0[free fh,0,0 end.
   fad=. MapViewOfFileR mh;va;0;0;0
@@ -50,7 +50,7 @@ map=: 3 : 0
 :
 if. 0=L.x do. t=. <&> x else. t=. x end.
 'type tshape hsize'=. 3 {. t, a:
-type =. nountype type
+type=. nountype type
 
 'trailing shape may not be zero' assert -. 0 e. tshape
 
@@ -81,8 +81,7 @@ NB. verb.  Any attempt to unmap the file when there is an alias outstanding to t
 if. ro*.0=type do. NB. readonly jmf file
   had=. allochdr 63
   d=. memr fad,0,HSN,JINT
-  d=. (sfu HS+-/ufs fad,had),aa,2}.d NB. HADK HADFLAG
-  d=. initc HADCN} d
+  d=. ((sfu HS+-/ufs fad,had),aa,initc) (SZI<.@%~HADK,HADFLAG,HADC) } d
   d setheader had
 elseif. 0=type do.  NB. other jmf file
   had=. fad
@@ -94,7 +93,7 @@ elseif. 0=type do.  NB. other jmf file
     t=. 10000+ getHADC had NB. shared ref count is bumped and is not valid
   end.
   (,t+initc) setHADC had
-else.  NB. header is to be allocated as a J block
+elseif. do.  NB. header is to be allocated as a J block
   had=. allochdr 63                    NB. allocate header
   'JBOXED (non-jmf) not supported' assert JBOXED~:type
   bx=. JBOXED=type
@@ -102,15 +101,15 @@ NB.  hs=. (+/hsize)*asize=. JSIZES {~ JTYPES i. type
 NB. hsize should be in byte not atom, data knows nothing about items
   hs=. +/hsize [ asize=. JSIZES {~ JTYPES i. type
   lshape=. bx}.<.(ts-hs)%(*/tshape)*asize
-  d=. sfu hs+-/ufs fad,had
-  h=. d,aa,ts,type,initc,(*/lshape,tshape),((-.bx)+#tshape),lshape,tshape
+  d=. memr had,0,NORMAH,JINT
+  h=. ((sfu hs+-/ufs fad,had),aa,ts,type,initc,(*/lshape,tshape),((-.bx)+#tshape)) (SZI<.@%~HADK,HADFLAG,HADM,HADT,HADC,HADN,HADR)} d,lshape,tshape
   h setheader had  NB. set header
 end.
 
 m=. (had;0=type) (MAPHEADER,MAPJMF)}m
 mappings=: mappings,m
 (name)=: 15!:7 had   NB. Install the mapped value into the name
-if. -. initc do. (name) =: $: end.  NB. special trigger assignment to mark the mapped name as protected.  $: (self) is invalid otherwise; this way we add 0 instructions to the non-NJA line
+if. -. initc do. (name)=: $: end.  NB. special trigger assignment to mark the mapped name as protected.  $: (self) is invalid otherwise; this way we add 0 instructions to the non-NJA line
 i.0 0
 )
 
@@ -125,7 +124,7 @@ row=. ({."1 mappings)i.<name
 'remap: not mapped' assert row<#mappings
 m=. row{mappings
 fn=. ;1{m
-ro=.  >MAPMT{m  NB. mt - maptype - 0/ro/cow
+ro=. >MAPMT{m  NB. mt - maptype - 0/ro/cow
 jmf=. >MAPJMF{m
 hs=. HS*jmf
 
